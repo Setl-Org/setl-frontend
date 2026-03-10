@@ -1,0 +1,134 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Mail, Lock, User } from "lucide-react";
+import { FormField } from "@/components/ui/FormField";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/cn";
+import { useAuthStore } from "@/stores/authStore";
+import { trimFormData } from "@/lib/formUtils";
+import { loginSchema, signUpSchema } from "../schemas/authSchemas";
+
+const MODES = { signIn: "signIn", signUp: "signUp" };
+
+/**
+ * AuthForm - Email/password form for sign in or sign up.
+ *
+ * @param {Object} props
+ * @param {"signIn" | "signUp"} props.mode
+ * @param {(data: Object) => Promise<void>} [props.onSubmit]
+ */
+export function AuthForm({ mode, onSubmit }) {
+  const isSignUp = mode === MODES.signUp;
+  const schema = isSignUp ? signUpSchema : loginSchema;
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: isSignUp
+      ? { name: "", email: "", password: "", confirmPassword: "" }
+      : { email: "", password: "" },
+    resolver: zodResolver(schema),
+    mode: "onSubmit",
+  });
+
+  const handleFormSubmit = async (data) => {
+    try {
+      const cleaned = trimFormData(data);
+      if (onSubmit) {
+        await onSubmit(cleaned);
+      } else {
+        // Placeholder: replace with real auth API
+        await new Promise((r) => setTimeout(r, 600));
+        toast.success(isSignUp ? "Account created. Sign in to continue." : "Signed in.");
+        if (isSignUp) {
+          navigate("/auth?mode=signIn", { replace: true });
+        } else {
+          useAuthStore.getState().login({ email: cleaned.email });
+          navigate("/dashboard", { replace: true });
+        }
+      }
+    } catch (err) {
+      toast.error(err?.message ?? (isSignUp ? "Sign up failed." : "Sign in failed."));
+      throw err;
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+      {isSignUp && (
+        <FormField label="Name" required error={errors.name?.message} id="name">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Your name"
+              className="pl-9"
+              {...register("name")}
+            />
+          </div>
+        </FormField>
+      )}
+      <FormField label="Email" required error={errors.email?.message} id="email">
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="email"
+            placeholder="you@company.com"
+            className="pl-9"
+            {...register("email")}
+          />
+        </div>
+      </FormField>
+      <FormField
+        label="Password"
+        required
+        error={errors.password?.message}
+        id="password"
+        hint={isSignUp ? "Min 8 characters, with upper, lower, and number" : undefined}
+      >
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="password"
+            placeholder="••••••••"
+            className="pl-9"
+            {...register("password")}
+          />
+        </div>
+      </FormField>
+      {isSignUp && (
+        <FormField
+          label="Confirm password"
+          required
+          error={errors.confirmPassword?.message}
+          id="confirmPassword"
+        >
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="password"
+              placeholder="••••••••"
+              className="pl-9"
+              {...register("confirmPassword")}
+            />
+          </div>
+        </FormField>
+      )}
+      <Button
+        type="submit"
+        variant="tertiary"
+        className="w-full min-h-[48px] shadow-[0_0_24px_-6px_rgba(124,58,237,0.4)] transition hover:shadow-[0_0_32px_-8px_rgba(124,58,237,0.5)]"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Please wait…" : isSignUp ? "Create account" : "Sign in"}
+      </Button>
+    </form>
+  );
+}

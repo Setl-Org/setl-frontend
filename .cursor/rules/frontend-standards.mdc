@@ -1,0 +1,26 @@
+---
+description: Frontend coding standards - follow FRONTEND_STANDARDS.md
+globs: "**/*.{js,jsx}"
+alwaysApply: true
+---
+
+# SETL Frontend Standards
+
+Follow the conventions in **FRONTEND_STANDARDS.md** for all frontend code.
+
+## Key patterns
+
+- **Components**: Use `FormField`, `DialogFormFooter`, `Loader`, `Badge` from `@/components/ui/`
+- **Hooks**: `useDialogForm`, `useApiAction`, `useDataFetch` from `@/hooks/`
+- **Styles**: `SELECT_CLASS`, `INPUT_CLASS`, `TEXTAREA_CLASS` from `@/lib/styles`
+- **Forms**: React Hook Form + Zod + `trimFormData` from `@/lib/formUtils`
+- **Toasts**: `SUCCESS`, `ERROR`, `WARNING` from `@/lib/toastMessages`
+- **Utils**: `roleUtils`, `badgeUtils`, `userUtils`, `agentUtils` from `@/lib/`
+
+## Before committing
+
+- No `console.log`, no unused imports
+- Use reusable components and style constants
+- Toast notifications for user feedback
+- Loading states for async operations
+- Error handling with try-catch
