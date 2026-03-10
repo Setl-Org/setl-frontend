@@ -62,7 +62,7 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange, currency = "PKR
           </a>
         </nav>
         <div className="relative z-10 flex items-center gap-2 sm:gap-3">
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative hidden sm:block" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setCurrencyOpen((o) => !o)}
@@ -114,7 +114,10 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange, currency = "PKR
           </Link>
           <Link
             to="/auth"
-            className={cn(BUTTON_TERTIARY_CLASS, "inline-flex min-h-[44px] px-4 sm:px-6")}
+            className={cn(
+              BUTTON_TERTIARY_CLASS,
+              "hidden min-h-[44px] px-4 sm:inline-flex sm:px-6"
+            )}
           >
             Get API keys
           </Link>
@@ -150,27 +153,6 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange, currency = "PKR
             >
               Pricing
             </a>
-            <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
-              <span className="w-full px-4 text-xs font-medium text-muted-foreground">Pricing currency</span>
-              {CURRENCIES.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => {
-                    onCurrencyChange(c.id);
-                  }}
-                  className={cn(
-                    "flex min-h-[44px] items-center gap-2 rounded-lg border px-3 py-2 text-sm",
-                    currency === c.id
-                      ? "border-tertiary bg-tertiary/10 font-medium text-tertiary"
-                      : "border-border/80 bg-primary text-secondary"
-                  )}
-                >
-                  <span className="text-lg">{c.flag}</span>
-                  <span>{c.abbr}</span>
-                </button>
-              ))}
-            </div>
             <div className="mt-2 flex flex-col gap-2 border-t border-border/60 pt-2">
               <Link
                 to="/auth"
@@ -181,16 +163,6 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange, currency = "PKR
                 onClick={closeMenu}
               >
                 Sign In
-              </Link>
-              <Link
-                to="/auth"
-                className={cn(
-                  BUTTON_TERTIARY_CLASS,
-                  "min-h-[48px] w-full justify-center"
-                )}
-                onClick={closeMenu}
-              >
-                Get API keys
               </Link>
             </div>
           </nav>

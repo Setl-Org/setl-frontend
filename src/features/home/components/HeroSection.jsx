@@ -56,7 +56,7 @@ export function HeroSection() {
             </motion.h1>
             <motion.p
               variants={FADE_IN_UP}
-              className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:mt-6 sm:text-lg lg:text-xl"
+              className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:mt-6 sm:text-base lg:text-lg xl:text-xl"
               style={{ lineHeight: 1.7 }}
             >
               Upload PDF statements by bank and month. We parse them.

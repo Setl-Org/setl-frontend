@@ -66,7 +66,7 @@ export function DashboardPage() {
               <Key className="h-4 w-4" />
               <span className="hidden sm:inline">API key</span>
             </button>
-            <span className="text-sm text-muted-foreground">
+            <span className="hidden text-sm text-muted-foreground sm:inline">
               {user?.email ?? "Demo user"}
             </span>
             <button
