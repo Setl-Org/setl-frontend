@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LogOut, Key } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
+import api from "@/lib/api";
 import {
   StatCard,
   ChartTransactionsByMonth,
@@ -22,8 +23,17 @@ import {
   PARSED_TRANSACTIONS,
 } from "./constants";
 
+const CATEGORY_COLORS = [
+  "bg-tertiary",
+  "bg-tertiary/80",
+  "bg-tertiary/60",
+  "bg-tertiary/50",
+  "bg-muted-foreground/40",
+];
+
 /**
  * DashboardPage - Post-login dashboard: accounts, stat cards, charts, parsed transactions table.
+ * Data is fetched from the backend; constants serve as fallback defaults.
  */
 export function DashboardPage() {
   const user = useAuthStore((state) => state.user);
@@ -31,9 +41,38 @@ export function DashboardPage() {
 
   const [accounts, setAccounts] = useState(INITIAL_ACCOUNTS);
   const [statementsCount, setStatementsCount] = useState(12);
+  const [totalTransactions, setTotalTransactions] = useState("2,847");
+  const [transactionsByMonth, setTransactionsByMonth] = useState(TRANSACTIONS_BY_MONTH);
+  const [spendingByCategory, setSpendingByCategory] = useState(SPENDING_BY_CATEGORY);
+  const [balanceTrend, setBalanceTrend] = useState(BALANCE_TREND);
+  const [transactions, setTransactions] = useState(PARSED_TRANSACTIONS);
+
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [apiKeyOpen, setApiKeyOpen] = useState(false);
+
+  useEffect(() => {
+    api
+      .get("/dashboard/data")
+      .then((res) => {
+        const d = res.data.data;
+        setAccounts(d.accounts);
+        setStatementsCount(d.stats.statementsUploaded);
+        setTotalTransactions(d.stats.totalTransactions.toLocaleString());
+        setTransactionsByMonth(d.transactionsByMonth);
+        setSpendingByCategory(
+          d.spendingByCategory.map((c, i) => ({
+            ...c,
+            color: CATEGORY_COLORS[i] ?? "bg-muted-foreground/40",
+          }))
+        );
+        setBalanceTrend(d.balanceTrend);
+        setTransactions(d.transactions);
+      })
+      .catch(() => {
+        // Fallback to constants — already set as initial state
+      });
+  }, []);
 
   const handleAddAccount = (newAccount) => {
     setAccounts((prev) => [...prev, newAccount]);
@@ -45,8 +84,12 @@ export function DashboardPage() {
 
   const statCardsWithDynamic = [
     { ...STAT_CARDS[0], value: String(statementsCount) },
-    STAT_CARDS[1],
-    { ...STAT_CARDS[2], value: String(accounts.length), sub: `Across ${new Set(accounts.map((a) => a.bank)).size} bank(s)` },
+    { ...STAT_CARDS[1], value: totalTransactions },
+    {
+      ...STAT_CARDS[2],
+      value: String(accounts.length),
+      sub: `Across ${new Set(accounts.map((a) => a.bank)).size} bank(s)`,
+    },
   ];
 
   return (
@@ -67,7 +110,7 @@ export function DashboardPage() {
               <span className="hidden sm:inline">API key</span>
             </button>
             <span className="hidden text-sm text-muted-foreground sm:inline">
-              {user?.email ?? "Demo user"}
+              {user?.email ?? user?.profile?.email ?? "Demo user"}
             </span>
             <button
               type="button"
@@ -100,13 +143,13 @@ export function DashboardPage() {
         </section>
 
         <section className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <ChartTransactionsByMonth data={TRANSACTIONS_BY_MONTH} />
-          <ChartSpendingByCategory data={SPENDING_BY_CATEGORY} />
-          <ChartBalanceTrend data={BALANCE_TREND} />
+          <ChartTransactionsByMonth data={transactionsByMonth} />
+          <ChartSpendingByCategory data={spendingByCategory} />
+          <ChartBalanceTrend data={balanceTrend} />
         </section>
 
         <section className="mt-8">
-          <TransactionsTable transactions={PARSED_TRANSACTIONS} />
+          <TransactionsTable transactions={transactions} />
         </section>
       </main>
 
