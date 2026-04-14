@@ -120,7 +120,7 @@ export function ApiKeyModal({ open, onOpenChange }) {
   -H "Content-Type: application/json"`}
                 </pre>
                 <p className="mt-3">
-                  Replace <code className="rounded bg-muted px-1 font-mono text-foreground">YOUR_API_KEY</code> with your key. Base URL: <code className="rounded bg-muted px-1 font-mono text-foreground">{apiBaseUrl}</code>
+                  Replace <code className="rounded bg-muted px-1 font-mono text-foreground">YOUR_API_KEY</code> with your key.
                 </p>
               </div>
             )}

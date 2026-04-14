@@ -1,4 +1,5 @@
-import { Building2, Plus, Upload } from "lucide-react";
+import { useState } from "react";
+import { Building2, Plus, Upload, Eye, EyeOff, Copy, Check } from "lucide-react";
 
 /**
  * AccountsSection - List of account cards and actions (Add account, Upload statements).
@@ -8,6 +9,19 @@ export function AccountsSection({
   onAddAccount,
   onUploadStatements,
 }) {
+  const [visibleIds, setVisibleIds] = useState({});
+  const [copiedId, setCopiedId] = useState(null);
+
+  function toggleVisible(id) {
+    setVisibleIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
+
+  function copyAccountId(id, accountId) {
+    navigator.clipboard.writeText(accountId);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
   return (
     <div className="rounded-xl border border-border/80 bg-primary p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -43,20 +57,49 @@ export function AccountsSection({
           const label = acc.accountType
             ? acc.accountType.charAt(0).toUpperCase() + acc.accountType.slice(1)
             : "";
+          const isVisible = !!visibleIds[acc._id];
+          const isCopied = copiedId === acc._id;
           return (
             <div
               key={acc._id}
-              className="flex items-center gap-3 rounded-lg border border-border/80 bg-muted/30 p-4"
+              className="flex flex-col gap-2 rounded-lg border border-border/80 bg-muted/30 p-4"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tertiary/10 text-tertiary">
-                <Building2 className="h-5 w-5" />
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tertiary/10 text-tertiary">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-secondary truncate">
+                    {acc.accountName ?? label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{acc.bankName ? `${acc.bankName} · ` : ""}{label} · {mask}</p>
+                </div>
+                {acc.accountId && (
+                  <button
+                    type="button"
+                    onClick={() => toggleVisible(acc._id)}
+                    title={isVisible ? "Hide account ID" : "Show account ID"}
+                    className="shrink-0 rounded p-1 text-muted-foreground hover:text-secondary focus:outline-none focus:ring-2 focus:ring-tertiary"
+                  >
+                    {isVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                )}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-secondary truncate">
-                  {acc.accountName ?? label}
-                </p>
-                <p className="text-xs text-muted-foreground">{acc.bankName ? `${acc.bankName} · ` : ""}{label} · {mask}</p>
-              </div>
+              {isVisible && acc.accountId && (
+                <div className="flex items-center gap-2 rounded-md border border-border/60 bg-muted/50 px-3 py-1.5">
+                  <code className="min-w-0 flex-1 truncate text-xs text-muted-foreground font-mono">
+                    {acc.accountId}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => copyAccountId(acc._id, acc.accountId)}
+                    title="Copy account ID"
+                    className="shrink-0 rounded p-1 text-muted-foreground hover:text-secondary focus:outline-none focus:ring-2 focus:ring-tertiary"
+                  >
+                    {isCopied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}
