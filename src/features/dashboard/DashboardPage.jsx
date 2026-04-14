@@ -16,11 +16,7 @@ import {
 } from "./components";
 import {
   STAT_CARDS,
-  INITIAL_ACCOUNTS,
-  TRANSACTIONS_BY_MONTH,
   SPENDING_BY_CATEGORY,
-  BALANCE_TREND,
-  PARSED_TRANSACTIONS,
 } from "./constants";
 
 const CATEGORY_COLORS = [
@@ -39,13 +35,13 @@ export function DashboardPage() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
-  const [accounts, setAccounts] = useState(INITIAL_ACCOUNTS);
-  const [statementsCount, setStatementsCount] = useState(12);
-  const [totalTransactions, setTotalTransactions] = useState("2,847");
-  const [transactionsByMonth, setTransactionsByMonth] = useState(TRANSACTIONS_BY_MONTH);
-  const [spendingByCategory, setSpendingByCategory] = useState(SPENDING_BY_CATEGORY);
-  const [balanceTrend, setBalanceTrend] = useState(BALANCE_TREND);
-  const [transactions, setTransactions] = useState(PARSED_TRANSACTIONS);
+  const [accounts, setAccounts] = useState([]);
+  const [statementsCount, setStatementsCount] = useState();
+  const [totalTransactions, setTotalTransactions] = useState("");
+  const [transactionsByMonth, setTransactionsByMonth] = useState([]);
+  const [spendingByCategory, setSpendingByCategory] = useState([]);
+  const [balanceTrend, setBalanceTrend] = useState([]);
+  const [transactions, setTransactions] = useState([]);
 
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -56,18 +52,22 @@ export function DashboardPage() {
       .get("/dashboard/data")
       .then((res) => {
         const d = res.data.data;
-        setAccounts(d.accounts);
-        setStatementsCount(d.stats.statementsUploaded);
-        setTotalTransactions(d.stats.totalTransactions.toLocaleString());
-        setTransactionsByMonth(d.transactionsByMonth);
+        setAccounts(d.accounts ?? []);
+        setStatementsCount(d.stats?.statementsUploaded);
+        setTotalTransactions(
+          d.stats?.totalTransactions != null
+            ? d.stats.totalTransactions.toLocaleString()
+            : String(d.stats?.creditCount + d.stats?.debitCount || "")
+        );
+        setTransactionsByMonth(d.transactionsByMonth ?? []);
         setSpendingByCategory(
-          d.spendingByCategory.map((c, i) => ({
+          (d.spendingByCategory ?? []).map((c, i) => ({
             ...c,
             color: CATEGORY_COLORS[i] ?? "bg-muted-foreground/40",
           }))
         );
-        setBalanceTrend(d.balanceTrend);
-        setTransactions(d.transactions);
+        setBalanceTrend(d.balanceTrend ?? []);
+        setTransactions(d.recentTransactions ?? d.transactions ?? []);
       })
       .catch(() => {
         // Fallback to constants — already set as initial state

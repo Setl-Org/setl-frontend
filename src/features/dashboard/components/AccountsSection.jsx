@@ -37,22 +37,29 @@ export function AccountsSection({
         </div>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {accounts.map((acc) => (
-          <div
-            key={acc.id}
-            className="flex items-center gap-3 rounded-lg border border-border/80 bg-muted/30 p-4"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tertiary/10 text-tertiary">
-              <Building2 className="h-5 w-5" />
+        {accounts.map((acc) => {
+          const num = String(acc.accountNumber).replace(/\D/g, "");
+          const mask = num.length >= 4 ? "****" + num.slice(-4) : "****" + num;
+          const label = acc.accountType
+            ? acc.accountType.charAt(0).toUpperCase() + acc.accountType.slice(1)
+            : "";
+          return (
+            <div
+              key={acc._id}
+              className="flex items-center gap-3 rounded-lg border border-border/80 bg-muted/30 p-4"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-tertiary/10 text-tertiary">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-secondary truncate">
+                  {acc.accountName ?? label}
+                </p>
+                <p className="text-xs text-muted-foreground">{label} · {mask}</p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-secondary truncate">
-                {acc.name} · {acc.bank}
-              </p>
-              <p className="text-xs text-muted-foreground">{acc.mask}</p>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
