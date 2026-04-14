@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,6 +14,7 @@ import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { DialogFormFooter } from "@/components/ui/DialogFormFooter";
 import { MONTHS } from "../constants";
+import pdfApi from "@/lib/pdfApi";
 
 const schema = z.object({
   accountId: z.string().min(1, "Select an account"),
@@ -20,17 +22,17 @@ const schema = z.object({
   year: z.string().min(1, "Select year"),
 });
 
-const YEARS = ["2025", "2024", "2023"];
+const YEARS = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
-/**
- * UploadStatementsModal - Select account, month, year and upload PDF. Dummy: no real file upload.
- */
 export function UploadStatementsModal({
   open,
   onOpenChange,
   accounts,
   onUploaded,
 }) {
+  const fileRef = useRef(null);
+  const [fileError, setFileError] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -42,11 +44,31 @@ export function UploadStatementsModal({
     mode: "onSubmit",
   });
 
-  const onSubmit = () => {
-    onUploaded?.();
-    toast.success("Statement upload started. We'll parse it shortly.");
-    reset();
-    onOpenChange(false);
+  const onSubmit = async (data) => {
+    const file = fileRef.current?.files?.[0];
+    if (!file) {
+      setFileError("Please select a PDF file");
+      return;
+    }
+    setFileError("");
+
+    const account = accounts.find((a) => String(a._id) === String(data.accountId));
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("bank_name", account?.bankName || "Unknown Bank");
+    if (account?.password) formData.append("encrypted_password", account.password);
+
+    try {
+      await pdfApi.post("/extract-pdf/async", formData);
+      onUploaded?.();
+      toast.success("Statement uploaded. Processing started.");
+      reset();
+      fileRef.current.value = "";
+      onOpenChange(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Upload failed. Please try again.");
+    }
   };
 
   return (
@@ -68,11 +90,14 @@ export function UploadStatementsModal({
             >
               <Select {...register("accountId")}>
                 <option value="">Select account</option>
-                {accounts.map((acc) => (
-                  <option key={acc.id} value={acc.id}>
-                    {acc.name} · {acc.bank} {acc.mask}
-                  </option>
-                ))}
+                {accounts.map((acc) => {
+                  const mask = String(acc.accountNumber ?? "").replace(/\D/g, "").slice(-4);
+                  return (
+                    <option key={acc._id} value={acc._id}>
+                      {acc.accountName} · {acc.bankName}{mask ? ` ····${mask}` : ""}
+                    </option>
+                  );
+                })}
               </Select>
             </FormField>
             <FormField
@@ -105,8 +130,9 @@ export function UploadStatementsModal({
                 ))}
               </Select>
             </FormField>
-            <FormField label="PDF file" id="file" hint="PDF statement from your bank (optional for demo)">
+            <FormField label="PDF file" required id="file" error={fileError}>
               <input
+                ref={fileRef}
                 type="file"
                 accept=".pdf"
                 className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-tertiary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-tertiary hover:file:bg-tertiary/20"

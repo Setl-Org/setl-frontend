@@ -22,6 +22,7 @@ const schema = z.object({
   accountName: z.string().min(1, "Account name is required").max(50, "Too long"),
   accountType: z.enum(["checking", "savings"], { message: "Select an account type" }),
   accountNumber: z.string().min(1, "Account number is required").max(24, "Too long"),
+  password: z.string().optional(),
 });
 
 /**
@@ -34,15 +35,21 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { bank: "", accountName: "", accountType: "", accountNumber: "" },
+    defaultValues: { bank: "", accountName: "", accountType: "", accountNumber: "", password: "" },
     resolver: zodResolver(schema),
     mode: "onSubmit",
   });
 
   const onSubmit = async (data) => {
-    const { bank, accountName, accountNumber, accountType } = trimFormData(data);
+    const { bank, accountName, accountNumber, accountType, password } = trimFormData(data);
     try {
-      const res = await api.post("/dashboard/accounts", { accountName, accountNumber, accountType, bankName: bank });
+      const res = await api.post("/dashboard/accounts", {
+        accountName,
+        accountNumber,
+        accountType,
+        bankName: bank,
+        ...(password && { password }),
+      });
       toast.success("Account added successfully");
       onAdded(res.data.data.account);
       reset();
@@ -109,6 +116,18 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
                 type="text"
                 placeholder="e.g. 1234567890124521"
                 {...register("accountNumber")}
+              />
+            </FormField>
+            <FormField
+              label="PDF password"
+              error={errors.password?.message}
+              id="password"
+              hint="Password to unlock statements for this account (if applicable)"
+            >
+              <Input
+                type="password"
+                placeholder="Leave blank if not needed"
+                {...register("password")}
               />
             </FormField>
           </div>

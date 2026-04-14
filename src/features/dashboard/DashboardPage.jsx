@@ -88,7 +88,7 @@ export function DashboardPage() {
     {
       ...STAT_CARDS[2],
       value: String(accounts.length),
-      sub: `Across ${new Set(accounts.map((a) => a.bank)).size} bank(s)`,
+      sub: `Across ${new Set(accounts.map((a) => a.bankName)).size} bank(s)`,
     },
   ];
 
