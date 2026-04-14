@@ -55,7 +55,7 @@ export function AccountsSection({
                 <p className="font-medium text-secondary truncate">
                   {acc.accountName ?? label}
                 </p>
-                <p className="text-xs text-muted-foreground">{label} · {mask}</p>
+                <p className="text-xs text-muted-foreground">{acc.bankName ? `${acc.bankName} · ` : ""}{label} · {mask}</p>
               </div>
             </div>
           );

@@ -36,7 +36,7 @@ export function DashboardPage() {
   const logout = useAuthStore((state) => state.logout);
 
   const [accounts, setAccounts] = useState([]);
-  const [statementsCount, setStatementsCount] = useState();
+  const [statementsCount, setStatementsCount] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState("");
   const [transactionsByMonth, setTransactionsByMonth] = useState([]);
   const [spendingByCategory, setSpendingByCategory] = useState([]);

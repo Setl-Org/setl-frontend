@@ -40,9 +40,9 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
   });
 
   const onSubmit = async (data) => {
-    const { accountName, accountNumber, accountType } = trimFormData(data);
+    const { bank, accountName, accountNumber, accountType } = trimFormData(data);
     try {
-      const res = await api.post("/dashboard/accounts", { accountName, accountNumber, accountType });
+      const res = await api.post("/dashboard/accounts", { accountName, accountNumber, accountType, bankName: bank });
       toast.success("Account added successfully");
       onAdded(res.data.data.account);
       reset();

@@ -115,7 +115,7 @@ export function ApiKeyModal({ open, onOpenChange }) {
                 </pre>
                 <p className="mt-3 font-medium text-foreground">Example cURL:</p>
                 <pre className="mt-1 overflow-x-auto rounded border border-border bg-primary p-3 text-xs">
-{`curl -X GET "${apiBaseUrl}/v1/transactions" \\
+{`curl -X GET "${apiBaseUrl}/transactions" \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json"`}
                 </pre>
