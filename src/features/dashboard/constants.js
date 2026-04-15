@@ -12,6 +12,9 @@ export const BANKS = [
   "Easypaisa",
   "Faysal Bank",
   "Meezan Bank",
+  "NayaPay",
+  "Bank Alfalah",
+  "Standard Chartered",
 ];
 
 /** Initial dummy accounts (user can add more). */
