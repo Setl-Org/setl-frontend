@@ -15,6 +15,7 @@ import { Select } from "@/components/ui/Select";
 import { DialogFormFooter } from "@/components/ui/DialogFormFooter";
 import { MONTHS } from "../constants";
 import pdfApi from "@/lib/pdfApi";
+import { useAuthStore } from "@/stores/authStore";
 
 const schema = z.object({
   accountId: z.string().min(1, "Select an account"),
@@ -32,6 +33,7 @@ export function UploadStatementsModal({
 }) {
   const fileRef = useRef(null);
   const [fileError, setFileError] = useState("");
+  const user = useAuthStore((s) => s.user);
 
   const {
     register,
@@ -57,6 +59,7 @@ export function UploadStatementsModal({
     const formData = new FormData();
     formData.append("file", file);
     formData.append("bank_name", account?.bankName || "Unknown Bank");
+    if (user?._id) formData.append("user_id", user._id);
     if (account?.password) formData.append("encrypted_password", account.password);
 
     try {
