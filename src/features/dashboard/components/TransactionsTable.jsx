@@ -80,7 +80,7 @@ export function TransactionsTable({ transactions, visibleColumnIds }) {
         className: "hidden sm:table-cell",
         render: (_, row) => (
           <span className="whitespace-nowrap text-muted-foreground">
-            Rs {Number(row.balance).toLocaleString()}
+            {row.balance != null ? `Rs ${Number(row.balance).toLocaleString()}` : "—"}
           </span>
         ),
       },

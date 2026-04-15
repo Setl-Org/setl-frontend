@@ -12,18 +12,19 @@ import {
 } from "@/components/ui/Dialog";
 import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
+import { Input } from "@/components/ui/Input";
 import { DialogFormFooter } from "@/components/ui/DialogFormFooter";
-import { MONTHS } from "../constants";
 import pdfApi from "@/lib/pdfApi";
 import { useAuthStore } from "@/stores/authStore";
 
 const schema = z.object({
   accountId: z.string().min(1, "Select an account"),
-  month: z.string().min(1, "Select month"),
-  year: z.string().min(1, "Select year"),
+  startDate: z.string().min(1, "Select start date"),
+  endDate: z.string().min(1, "Select end date"),
+}).refine((d) => d.startDate <= d.endDate, {
+  message: "End date must be on or after start date",
+  path: ["endDate"],
 });
-
-const YEARS = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
 export function UploadStatementsModal({
   open,
@@ -41,7 +42,7 @@ export function UploadStatementsModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { accountId: "", month: "", year: "" },
+    defaultValues: { accountId: "", startDate: "", endDate: "" },
     resolver: zodResolver(schema),
     mode: "onSubmit",
   });
@@ -60,6 +61,9 @@ export function UploadStatementsModal({
     formData.append("file", file);
     formData.append("bank_name", account?.bankName || "Unknown Bank");
     if (user?._id) formData.append("user_id", user._id);
+    if (data.accountId) formData.append("account_id", data.accountId);
+    if (data.startDate) formData.append("start_date", data.startDate);
+    if (data.endDate) formData.append("end_date", data.endDate);
     if (account?.password) formData.append("encrypted_password", account.password);
 
     try {
@@ -80,7 +84,7 @@ export function UploadStatementsModal({
         <DialogHeader>
           <DialogTitle>Upload statement</DialogTitle>
           <DialogDescription>
-            Choose the account and the statement month. Upload a PDF from your bank.
+            Choose the account and the statement period. Upload a PDF from your bank.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -104,34 +108,20 @@ export function UploadStatementsModal({
               </Select>
             </FormField>
             <FormField
-              label="Month"
+              label="Start date"
               required
-              error={errors.month?.message}
-              id="month"
+              error={errors.startDate?.message}
+              id="startDate"
             >
-              <Select {...register("month")}>
-                <option value="">Select month</option>
-                {MONTHS.map((m, i) => (
-                  <option key={m} value={String(i + 1)}>
-                    {m}
-                  </option>
-                ))}
-              </Select>
+              <Input type="date" {...register("startDate")} />
             </FormField>
             <FormField
-              label="Year"
+              label="End date"
               required
-              error={errors.year?.message}
-              id="year"
+              error={errors.endDate?.message}
+              id="endDate"
             >
-              <Select {...register("year")}>
-                <option value="">Select year</option>
-                {YEARS.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </Select>
+              <Input type="date" {...register("endDate")} />
             </FormField>
             <FormField label="PDF file" required id="file" error={fileError}>
               <input
