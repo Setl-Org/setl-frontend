@@ -28,7 +28,7 @@ export function ApiKeyModal({ open, onOpenChange }) {
     let cancelled = false;
     setLoading(true);
     api
-      .get("/dashboard/apikey")
+      .get("/apikeys")
       .then(async (res) => {
         if (cancelled) return;
         if (res.data.data.apiKey) {
@@ -36,7 +36,7 @@ export function ApiKeyModal({ open, onOpenChange }) {
           setExpiresAt(res.data.data.expiresAt);
         } else {
           // No key yet — issue one automatically
-          const create = await api.post("/dashboard/apikey");
+          const create = await api.post("/apikeys");
           if (!cancelled) {
             setApiKey(create.data.data.apiKey);
             setExpiresAt(create.data.data.expiresAt);
@@ -70,7 +70,7 @@ export function ApiKeyModal({ open, onOpenChange }) {
     }
     setRotating(true);
     try {
-      const res = await api.put("/dashboard/apikey/rotate");
+      const res = await api.put("/apikeys/rotate");
       setApiKey(res.data.data.apiKey);
       setExpiresAt(res.data.data.expiresAt);
       toast.success("API key rotated. Update your integrations with the new key.");

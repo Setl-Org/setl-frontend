@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { LogOut, Key } from "lucide-react";
+import { Skeleton } from "boneyard-js/react";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import {
@@ -14,10 +15,7 @@ import {
   UploadStatementsModal,
   ApiKeyModal,
 } from "./components";
-import {
-  STAT_CARDS,
-  SPENDING_BY_CATEGORY,
-} from "./constants";
+import { STAT_CARDS } from "./constants";
 
 const CATEGORY_COLORS = [
   "bg-tertiary",
@@ -27,21 +25,30 @@ const CATEGORY_COLORS = [
   "bg-muted-foreground/40",
 ];
 
-/**
- * DashboardPage - Post-login dashboard: accounts, stat cards, charts, parsed transactions table.
- * Data is fetched from the backend; constants serve as fallback defaults.
- */
+const TX_PAGE_SIZE = 5;
+
 export function DashboardPage() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
-  const [accounts, setAccounts] = useState([]);
+  // Dashboard stats + charts
+  const [dashboardLoading, setDashboardLoading] = useState(true);
   const [statementsCount, setStatementsCount] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState("");
   const [transactionsByMonth, setTransactionsByMonth] = useState([]);
   const [spendingByCategory, setSpendingByCategory] = useState([]);
   const [balanceTrend, setBalanceTrend] = useState([]);
+
+  // Accounts
+  const [accountsLoading, setAccountsLoading] = useState(true);
+  const [accounts, setAccounts] = useState([]);
+
+  // Transactions (server-side paginated)
+  const [txLoading, setTxLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
+  const [txPage, setTxPage] = useState(1);
+  const [txTotalPages, setTxTotalPages] = useState(1);
+  const [txTotalItems, setTxTotalItems] = useState(0);
 
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -52,8 +59,7 @@ export function DashboardPage() {
       .get("/dashboard/data")
       .then((res) => {
         const d = res.data.data;
-        setAccounts(d.accounts ?? []);
-        setStatementsCount(d.stats?.statementsUploaded);
+        setStatementsCount(d.stats?.statementsUploaded ?? 0);
         setTotalTransactions(
           d.stats?.totalTransactions != null
             ? d.stats.totalTransactions.toLocaleString()
@@ -67,12 +73,36 @@ export function DashboardPage() {
           }))
         );
         setBalanceTrend(d.balanceTrend ?? []);
-        setTransactions(d.recentTransactions ?? d.transactions ?? []);
       })
-      .catch(() => {
-        // Fallback to constants — already set as initial state
-      });
+      .catch(() => {})
+      .finally(() => setDashboardLoading(false));
   }, []);
+
+  useEffect(() => {
+    api
+      .get("/accounts", { params: { page: 1, limit: 100 } })
+      .then((res) => setAccounts(res.data.data?.accounts ?? []))
+      .catch(() => {})
+      .finally(() => setAccountsLoading(false));
+  }, []);
+
+  const fetchTransactions = useCallback((page) => {
+    setTxLoading(true);
+    api
+      .get("/transactions", { params: { page, limit: TX_PAGE_SIZE } })
+      .then((res) => {
+        setTransactions(res.data.data?.transactions ?? []);
+        setTxPage(res.data.pagination?.currentPage ?? page);
+        setTxTotalPages(res.data.pagination?.totalPages ?? 1);
+        setTxTotalItems(res.data.pagination?.totalItems ?? 0);
+      })
+      .catch(() => {})
+      .finally(() => setTxLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchTransactions(1);
+  }, [fetchTransactions]);
 
   const handleAddAccount = (newAccount) => {
     setAccounts((prev) => [...prev, newAccount]);
@@ -80,6 +110,7 @@ export function DashboardPage() {
 
   const handleUploaded = () => {
     setStatementsCount((c) => c + 1);
+    fetchTransactions(1);
   };
 
   const statCardsWithDynamic = [
@@ -129,27 +160,48 @@ export function DashboardPage() {
         <h1 className="section-title mb-6">Dashboard</h1>
 
         <section className="mb-8">
-          <AccountsSection
-            accounts={accounts}
-            onAddAccount={() => setAddAccountOpen(true)}
-            onUploadStatements={() => setUploadOpen(true)}
-          />
+          <Skeleton name="accounts-section" loading={accountsLoading}>
+            <AccountsSection
+              accounts={accounts}
+              isLoading={accountsLoading}
+              onAddAccount={() => setAddAccountOpen(true)}
+              onUploadStatements={() => setUploadOpen(true)}
+            />
+          </Skeleton>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-3 sm:gap-6">
-          {statCardsWithDynamic.map((card) => (
-            <StatCard key={card.label} {...card} />
-          ))}
-        </section>
-
-        <section className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <ChartTransactionsByMonth data={transactionsByMonth} />
-          <ChartSpendingByCategory data={spendingByCategory} />
-          <ChartBalanceTrend data={balanceTrend} />
+        <section>
+          <Skeleton name="stat-cards" loading={dashboardLoading}>
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+              {statCardsWithDynamic.map((card) => (
+                <StatCard key={card.label} {...card} />
+              ))}
+            </div>
+          </Skeleton>
         </section>
 
         <section className="mt-8">
-          <TransactionsTable transactions={transactions} />
+          <Skeleton name="charts" loading={dashboardLoading}>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <ChartTransactionsByMonth data={transactionsByMonth} />
+              <ChartSpendingByCategory data={spendingByCategory} />
+              <ChartBalanceTrend data={balanceTrend} />
+            </div>
+          </Skeleton>
+        </section>
+
+        <section className="mt-8">
+          <Skeleton name="transactions-table" loading={txLoading && transactions.length === 0}>
+            <TransactionsTable
+              transactions={transactions}
+              isLoading={txLoading}
+              page={txPage}
+              totalPages={txTotalPages}
+              totalItems={txTotalItems}
+              pageSize={TX_PAGE_SIZE}
+              onPageChange={fetchTransactions}
+            />
+          </Skeleton>
         </section>
       </main>
 

@@ -1,7 +1,8 @@
 import { useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Table } from "@/components/ui/Table";
+import { cn } from "@/lib/cn";
 
-const PAGE_SIZE = 5;
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 const formatDate = (d) => {
@@ -16,14 +17,16 @@ const formatAmount = (amt) => {
   return `${sign}Rs ${Math.abs(n).toLocaleString()}`;
 };
 
-/**
- * TransactionsTable - Parsed transactions using reusable Table with sorting and optional column visibility.
- *
- * @param {Object} props
- * @param {Object[]} props.transactions - Rows with date, account, description, category, amount, balance
- * @param {string[]} [props.visibleColumnIds] - Optional list of column ids to show (e.g. ['date','account','description','amount'])
- */
-export function TransactionsTable({ transactions, visibleColumnIds }) {
+export function TransactionsTable({
+  transactions,
+  visibleColumnIds,
+  isLoading = false,
+  page = 1,
+  totalPages = 1,
+  totalItems = 0,
+  pageSize = 20,
+  onPageChange,
+}) {
   const columns = useMemo(
     () => [
       {
@@ -88,22 +91,68 @@ export function TransactionsTable({ transactions, visibleColumnIds }) {
     []
   );
 
+  const start = (page - 1) * pageSize + 1;
+  const end = Math.min(page * pageSize, totalItems);
+
   return (
     <div className="rounded-xl border border-border/80 bg-primary shadow-sm overflow-hidden">
       <div className="border-b border-border/80 bg-muted/30 px-4 py-3 sm:px-5">
         <h3 className="text-sm font-semibold text-secondary">Parsed transactions</h3>
         <p className="mt-0.5 text-xs text-muted-foreground">Sort by column header</p>
       </div>
-      <Table
-        columns={columns}
-        data={transactions}
-        visibleColumnIds={visibleColumnIds}
-        defaultSortKey="date"
-        defaultSortDir="desc"
-        keyExtractor={(row) => row.id}
-        pageSize={PAGE_SIZE}
-        emptyMessage="No transactions"
-      />
+
+      <div className={cn(isLoading && "opacity-60 pointer-events-none")}>
+        <Table
+          columns={columns}
+          data={transactions}
+          visibleColumnIds={visibleColumnIds}
+          defaultSortKey="date"
+          defaultSortDir="desc"
+          keyExtractor={(row) => row.id}
+          emptyMessage={isLoading ? "Loading…" : "No transactions"}
+        />
+      </div>
+
+      {totalItems > 0 && (
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-border/80 bg-muted/20 px-4 py-3 sm:flex-row sm:px-5">
+          <p className="text-xs text-muted-foreground">
+            Showing {start}–{end} of {totalItems.toLocaleString()}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => onPageChange?.(page - 1)}
+              disabled={page <= 1 || isLoading}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition",
+                page <= 1 || isLoading
+                  ? "cursor-not-allowed opacity-50"
+                  : "hover:bg-muted hover:text-secondary"
+              )}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="min-w-24 px-2 text-center text-sm font-medium text-secondary">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => onPageChange?.(page + 1)}
+              disabled={page >= totalPages || isLoading}
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition",
+                page >= totalPages || isLoading
+                  ? "cursor-not-allowed opacity-50"
+                  : "hover:bg-muted hover:text-secondary"
+              )}
+              aria-label="Next page"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

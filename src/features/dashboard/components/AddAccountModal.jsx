@@ -43,7 +43,7 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
   const onSubmit = async (data) => {
     const { bank, accountName, accountNumber, accountType, password } = trimFormData(data);
     try {
-      const res = await api.post("/dashboard/accounts", {
+      const res = await api.post("/accounts", {
         accountName,
         accountNumber,
         accountType,

@@ -6,6 +6,7 @@ import { Building2, Plus, Upload, Eye, EyeOff, Copy, Check } from "lucide-react"
  */
 export function AccountsSection({
   accounts,
+  isLoading = false,
   onAddAccount,
   onUploadStatements,
 }) {
@@ -51,7 +52,22 @@ export function AccountsSection({
         </div>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {accounts.map((acc) => {
+        {isLoading && accounts.length === 0
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-2 rounded-lg border border-border/80 bg-muted/30 p-4 animate-pulse"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-3/4 rounded bg-muted" />
+                    <div className="h-2.5 w-1/2 rounded bg-muted" />
+                  </div>
+                </div>
+              </div>
+            ))
+          : accounts.map((acc) => {
           const num = String(acc.accountNumber).replace(/\D/g, "");
           const mask = num.length >= 4 ? "****" + num.slice(-4) : "****" + num;
           const label = acc.accountType
