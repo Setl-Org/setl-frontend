@@ -24,7 +24,7 @@ export function AccountsSection({
   }
 
   return (
-    <div className="rounded-xl border border-border/80 bg-primary p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-border/70 bg-white p-4 shadow-sm sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold text-secondary">Accounts</h2>

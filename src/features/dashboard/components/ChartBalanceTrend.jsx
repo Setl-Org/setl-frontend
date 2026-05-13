@@ -33,7 +33,7 @@ export function ChartBalanceTrend({ data }) {
   }));
 
   return (
-    <div className="rounded-xl border border-border/80 bg-primary p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-border/70 bg-white p-4 shadow-sm sm:p-5">
       <h3 className="text-sm font-semibold text-secondary">Balance over time</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">
         End-of-day balance (sample)

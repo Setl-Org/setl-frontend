@@ -6,6 +6,7 @@ import { HomePage } from "@/features/home";
 import { AuthPage } from "@/features/auth";
 import { DashboardPage } from "@/features/dashboard";
 import { NotFoundPage } from "@/features/not-found";
+import { OAuthConsentPage } from "@/features/oauth/OAuthConsentPage";
 
 function App() {
   return (
@@ -19,6 +20,14 @@ function App() {
             element={
               <ProtectedRoute redirectPath="/auth">
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/oauth/authorize"
+            element={
+              <ProtectedRoute redirectPath="/auth">
+                <OAuthConsentPage />
               </ProtectedRoute>
             }
           />

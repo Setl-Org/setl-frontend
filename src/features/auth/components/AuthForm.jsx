@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ export function AuthForm({ mode, onSubmit }) {
   const isSignUp = mode === MODES.signUp;
   const schema = isSignUp ? signUpSchema : loginSchema;
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -62,7 +63,8 @@ export function AuthForm({ mode, onSubmit }) {
         const { user, token } = response.data.data;
         useAuthStore.getState().login(user, token);
         toast.success("Signed in.");
-        navigate("/dashboard", { replace: true });
+        const from = location.state?.from ?? { pathname: "/dashboard" };
+        navigate(from, { replace: true });
       }
     } catch (err) {
       const message =

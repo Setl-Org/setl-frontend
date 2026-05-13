@@ -32,7 +32,7 @@ export function ChartTransactionsByMonth({ data }) {
   }));
 
   return (
-    <div className="rounded-xl border border-border/80 bg-primary p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-border/70 bg-white p-4 shadow-sm sm:p-5">
       <h3 className="text-sm font-semibold text-secondary">Transactions by month</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">Credits vs debits · last 6 months</p>
       <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">

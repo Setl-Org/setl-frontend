@@ -15,6 +15,7 @@ export const BANKS = [
   "NayaPay",
   "Bank Alfalah",
   "Standard Chartered",
+  "Askari Bank",
 ];
 
 /** Initial dummy accounts (user can add more). */

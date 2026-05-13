@@ -9,19 +9,21 @@ export function StatCard({ label, value, sub, iconKey }) {
   const Icon = ICONS[iconKey];
 
   return (
-    <div className="card-hover rounded-xl border border-border/80 bg-primary p-5 shadow-sm sm:p-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-1 text-2xl font-bold tracking-tight text-secondary sm:text-3xl">
-            {value}
+    <div className="card-hover rounded-2xl border border-border/70 bg-white p-5 shadow-sm transition-all hover:border-tertiary/20 hover:shadow-md sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {label}
+          </p>
+          <p className="mt-2 text-2xl font-bold tracking-tight text-secondary sm:text-3xl">
+            {value || "—"}
           </p>
           {sub && (
             <p className="mt-1 text-xs text-muted-foreground">{sub}</p>
           )}
         </div>
         {Icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-tertiary/10 text-tertiary">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-tertiary/10 text-tertiary">
             <Icon className="h-5 w-5" />
           </div>
         )}
