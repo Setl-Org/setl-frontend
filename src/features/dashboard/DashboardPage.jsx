@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { LogOut, Key, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard, Code2 } from "lucide-react";
 import { Skeleton } from "boneyard-js/react";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
@@ -13,7 +13,6 @@ import {
   AccountsSection,
   AddAccountModal,
   UploadStatementsModal,
-  ApiKeyModal,
   DashboardSidebar,
 } from "./components";
 import { STAT_CARDS } from "./constants";
@@ -51,7 +50,6 @@ export function DashboardPage() {
 
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [apiKeyOpen, setApiKeyOpen] = useState(false);
 
   useEffect(() => {
     api
@@ -149,15 +147,14 @@ export function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setApiKeyOpen(true)}
+            <Link
+              to="/developer"
               className="flex items-center gap-1.5 rounded-lg border border-border/80 bg-white px-3 py-2 text-sm font-medium text-secondary shadow-sm transition-all hover:bg-muted/60 hover:shadow focus:outline-none focus:ring-2 focus:ring-tertiary focus:ring-offset-2"
-              aria-label="API key"
+              aria-label="Developer portal"
             >
-              <Key className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="hidden sm:inline">API key</span>
-            </button>
+              <Code2 className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="hidden sm:inline">Developer</span>
+            </Link>
 
             <div className="hidden h-4 w-px bg-border sm:block" />
 
@@ -257,7 +254,6 @@ export function DashboardPage() {
             <DashboardSidebar
               onAddAccount={() => setAddAccountOpen(true)}
               onUploadStatements={() => setUploadOpen(true)}
-              onApiKey={() => setApiKeyOpen(true)}
             />
           </div>
         </div>
@@ -275,7 +271,6 @@ export function DashboardPage() {
         accounts={accounts}
         onUploaded={handleUploaded}
       />
-      <ApiKeyModal open={apiKeyOpen} onOpenChange={setApiKeyOpen} />
     </div>
   );
 }

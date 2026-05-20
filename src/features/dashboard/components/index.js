@@ -1,5 +1,4 @@
 export { AddAccountModal } from "./AddAccountModal.jsx";
-export { ApiKeyModal } from "./ApiKeyModal.jsx";
 export { AccountsSection } from "./AccountsSection.jsx";
 export { ChartBalanceTrend } from "./ChartBalanceTrend.jsx";
 export { ChartSpendingByCategory } from "./ChartSpendingByCategory.jsx";

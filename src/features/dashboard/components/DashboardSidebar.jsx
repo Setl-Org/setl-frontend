@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Building2, Upload, Key, Bell, ChevronRight, BookOpen, ExternalLink, Zap, MessageSquare, TrendingUp } from "lucide-react";
+import { Building2, Upload, Bell, ChevronRight, BookOpen, ExternalLink, Zap, MessageSquare, TrendingUp } from "lucide-react";
 
-export function DashboardSidebar({ onAddAccount, onUploadStatements, onApiKey }) {
+export function DashboardSidebar({ onAddAccount, onUploadStatements }) {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -13,7 +13,6 @@ export function DashboardSidebar({ onAddAccount, onUploadStatements, onApiKey })
   const quickActions = [
     { label: "Add account", Icon: Building2, onClick: onAddAccount },
     { label: "Upload statements", Icon: Upload, onClick: onUploadStatements },
-    { label: "API key", Icon: Key, onClick: onApiKey },
   ];
 
   const resources = [
