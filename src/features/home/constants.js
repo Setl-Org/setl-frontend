@@ -53,14 +53,14 @@ export const CURRENCIES = [
 export const PRICING_PLANS = [
   {
     name: "Pay as you go",
-    statements: { PKR: "Rs 500 / statement", AED: "AED 50 / statement", SAR: "SAR 50 / statement" },
+    statements: "Coming soon",
     analytics: { PKR: "Included", AED: "Included", SAR: "Included" },
     api: { PKR: "Included", AED: "Included", SAR: "Included" },
     support: { PKR: "Email support", AED: "Email support", SAR: "Email support" },
   },
   {
     name: "Growth / Scale",
-    statements: { PKR: "Volume discount", AED: "Volume discount", SAR: "Volume discount" },
+    statements: "Coming soon",
     analytics: { PKR: "Advanced", AED: "Advanced", SAR: "Advanced" },
     api: { PKR: "Higher limits", AED: "Higher limits", SAR: "Higher limits" },
     support: { PKR: "Priority support", AED: "Priority support", SAR: "Priority support" },

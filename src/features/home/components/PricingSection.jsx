@@ -17,9 +17,10 @@ export function PricingSection({ currency = "PKR" }) {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mx-auto max-w-2xl text-center">
-          <h2 className="section-title">Transparent pricing</h2>
+          <h2 className="section-title">Pricing</h2>
           <p className="section-subtitle mt-2 sm:mt-4">
-            Upload statements, get analytics, and use the API. No direct bank connection.
+            Upload statements, get analytics, and use the API. Pricing is on the way —
+            plans and per-statement rates will be announced soon.
           </p>
         </AnimatedSection>
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:mt-16 sm:grid-cols-2 sm:gap-8">
@@ -34,7 +35,7 @@ export function PricingSection({ currency = "PKR" }) {
           transition={{ delay: 0.4 }}
           className="mt-6 text-center text-sm text-muted-foreground"
         >
-          Pricing subject to change. Contact sales for enterprise.
+          Final pricing coming soon. Contact sales for early access and enterprise.
         </motion.p>
       </div>
     </section>
