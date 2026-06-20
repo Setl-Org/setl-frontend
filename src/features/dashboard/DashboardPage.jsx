@@ -51,8 +51,8 @@ export function DashboardPage() {
   const [addAccountOpen, setAddAccountOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  useEffect(() => {
-    api
+  const fetchDashboardData = useCallback(() => {
+    return api
       .get("/dashboard/data")
       .then((res) => {
         const d = res.data.data;
@@ -75,13 +75,21 @@ export function DashboardPage() {
       .finally(() => setDashboardLoading(false));
   }, []);
 
-  useEffect(() => {
-    api
+  const fetchAccounts = useCallback(() => {
+    return api
       .get("/accounts", { params: { page: 1, limit: 100 } })
       .then((res) => setAccounts(res.data.data?.accounts ?? []))
       .catch(() => {})
       .finally(() => setAccountsLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   const fetchTransactions = useCallback((page, bankFilter = null) => {
     setTxLoading(true);
@@ -113,7 +121,11 @@ export function DashboardPage() {
   };
 
   const handleUploaded = () => {
-    setStatementsCount((c) => c + 1);
+    // Processing runs synchronously on the PDF service, so by the time the
+    // upload resolves the new transactions are already persisted. Refresh
+    // every data source so stats, charts, accounts and the table reflect them.
+    fetchDashboardData();
+    fetchAccounts();
     fetchTransactions(1, txBankFilter);
   };
 
