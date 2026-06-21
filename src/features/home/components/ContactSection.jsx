@@ -16,6 +16,7 @@ const EMPTY = { name: "", email: "", company: "", message: "" };
 export function ContactSection() {
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -30,13 +31,25 @@ export function ContactSection() {
     return Object.keys(next).length === 0;
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    // TODO: POST to a real endpoint / CRM when available.
-    toast.success("Thanks — we'll be in touch shortly.");
-    setForm(EMPTY);
-    setErrors({});
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Request failed");
+      toast.success("Thanks — we'll be in touch shortly.");
+      setForm(EMPTY);
+      setErrors({});
+    } catch {
+      toast.error("Couldn't send right now. Please try again in a moment.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -114,14 +127,15 @@ export function ContactSection() {
           </div>
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            disabled={submitting}
+            whileHover={submitting ? undefined : { scale: 1.01 }}
+            whileTap={submitting ? undefined : { scale: 0.99 }}
             className={cn(
               BUTTON_TERTIARY_CLASS,
-              "mt-6 min-h-[48px] w-full rounded-xl bg-[linear-gradient(135deg,#8b5cf6,#7c3aed,#6d28d9)] py-3 text-base font-semibold shadow-lg shadow-tertiary/30 ring-1 ring-inset ring-white/20 transition-all hover:shadow-xl hover:shadow-tertiary/40 hover:brightness-110"
+              "mt-6 min-h-[48px] w-full rounded-xl bg-[linear-gradient(135deg,#8b5cf6,#7c3aed,#6d28d9)] py-3 text-base font-semibold shadow-lg shadow-tertiary/30 ring-1 ring-inset ring-white/20 transition-all hover:shadow-xl hover:shadow-tertiary/40 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
             )}
           >
-            Talk to the team
+            {submitting ? "Sending…" : "Talk to the team"}
           </motion.button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
             We&apos;ll only use your details to get in touch about Setl.

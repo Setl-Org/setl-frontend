@@ -52,7 +52,7 @@ export function MetricsSection() {
               variants={FADE_IN_UP}
               className="flex flex-col items-center text-center"
             >
-              <span className="bg-[linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b,#22c55e,#3b82f6,#7c3aed)] bg-[length:200%_auto] bg-clip-text text-4xl font-extrabold tracking-tight text-transparent animate-shimmer sm:text-5xl lg:text-6xl">
+              <span className="inline-block bg-[linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b,#22c55e,#3b82f6,#7c3aed)] bg-[length:200%_auto] bg-clip-text px-1 pb-1.5 text-4xl font-extrabold leading-[1.15] tracking-tight text-transparent animate-shimmer sm:text-5xl lg:text-6xl">
                 {display ? (
                   display
                 ) : (
