@@ -13,10 +13,10 @@ export function CtaSection() {
     <section className="relative overflow-hidden border-t border-border bg-primary py-16 section-pattern-cta sm:py-24 lg:py-32">
       <div className="cta-section-bg absolute inset-0 -z-10" />
       <AnimatedSection className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-        <h2 className="section-title">Ready to get started?</h2>
+        <h2 className="section-title">Ship the thing you set out to build.</h2>
         <p className="section-subtitle mt-2 sm:mt-4">
-          Sign in, upload your statements, and get API access to your
-          transaction data.
+          Upload your first statement and see clean, categorized data in
+          minutes. No bank integration, no SDK.
         </p>
         <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
           <motion.div
@@ -36,7 +36,7 @@ export function CtaSection() {
             </Link>
           </motion.div>
           <motion.a
-            href="mailto:contact@setl.dev"
+            href="#contact"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             className={cn(
@@ -44,7 +44,7 @@ export function CtaSection() {
               "inline-flex min-h-[48px] w-full items-center justify-center px-6 py-3 text-base sm:w-auto sm:px-8"
             )}
           >
-            Contact sales
+            Talk to the team
           </motion.a>
         </div>
       </AnimatedSection>

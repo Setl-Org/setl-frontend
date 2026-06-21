@@ -1,11 +1,17 @@
+export { AiShowcaseSection } from "./AiShowcaseSection.jsx";
 export { AnimatedSection } from "./AnimatedSection.jsx";
 export { ApiSection } from "./ApiSection.jsx";
+export { BankLogo } from "./BankLogo.jsx";
 export { ComplianceSection } from "./ComplianceSection.jsx";
+export { ContactSection } from "./ContactSection.jsx";
 export { CtaSection } from "./CtaSection.jsx";
 export { Footer } from "./Footer.jsx";
 export { HeroSection } from "./HeroSection.jsx";
 export { HowItWorksSection } from "./HowItWorksSection.jsx";
 export { LandingNav } from "./LandingNav.jsx";
+export { MetricsSection } from "./MetricsSection.jsx";
 export { MouseSpotlight } from "./MouseSpotlight.jsx";
+export { OutcomeSection } from "./OutcomeSection.jsx";
+export { PainSection } from "./PainSection.jsx";
 export { PricingCard } from "./PricingCard.jsx";
 export { PricingSection } from "./PricingSection.jsx";
