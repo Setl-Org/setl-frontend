@@ -118,7 +118,7 @@ export function AuthPage() {
               </button>
             </div>
 
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <a
                 href={googleUrl || "#"}
                 onClick={(e) => {
@@ -155,7 +155,7 @@ export function AuthPage() {
               <div className="h-px flex-1 bg-border" />
               <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">or</span>
               <div className="h-px flex-1 bg-border" />
-            </div>
+            </div> */}
 
             <AuthForm mode={mode} />
           </motion.div>
