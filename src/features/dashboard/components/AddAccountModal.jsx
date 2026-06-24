@@ -14,16 +14,19 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { DialogFormFooter } from "@/components/ui/DialogFormFooter";
 import { trimFormData } from "@/lib/formUtils";
+import api from "@/lib/api";
 import { BANKS } from "../constants";
 
 const schema = z.object({
   bank: z.string().min(1, "Select a bank"),
-  name: z.string().min(1, "Account name is required").max(50, "Too long"),
+  accountName: z.string().min(1, "Account name is required").max(50, "Too long"),
+  accountType: z.enum(["checking", "savings"], { message: "Select an account type" }),
   accountNumber: z.string().min(1, "Account number is required").max(24, "Too long"),
+  password: z.string().optional(),
 });
 
 /**
- * AddAccountModal - Create a new account (bank + nickname). Dummy: generates a mask.
+ * AddAccountModal - Create a new account via the backend API.
  */
 export function AddAccountModal({ open, onOpenChange, onAdded }) {
   const {
@@ -32,26 +35,28 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { bank: "", name: "", accountNumber: "" },
+    defaultValues: { bank: "", accountName: "", accountType: "", accountNumber: "", password: "" },
     resolver: zodResolver(schema),
     mode: "onSubmit",
   });
 
-  const onSubmit = (data) => {
-    const cleaned = trimFormData(data);
-    const id = `acc-${Date.now()}`;
-    const num = String(cleaned.accountNumber).replace(/\D/g, "");
-    const mask = num.length >= 4 ? "****" + num.slice(-4) : "****" + num;
-    onAdded({
-      id,
-      bank: cleaned.bank,
-      name: cleaned.name,
-      accountNumber: cleaned.accountNumber,
-      mask,
-    });
-    toast.success("Account added.");
-    reset();
-    onOpenChange(false);
+  const onSubmit = async (data) => {
+    const { bank, accountName, accountNumber, accountType, password } = trimFormData(data);
+    try {
+      const res = await api.post("/accounts", {
+        accountName,
+        accountNumber,
+        accountType,
+        bankName: bank,
+        ...(password && { password }),
+      });
+      toast.success("Account added successfully");
+      onAdded(res.data.data.account);
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.message ?? "Failed to add account.");
+    }
   };
 
   return (
@@ -60,7 +65,7 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
         <DialogHeader>
           <DialogTitle>Add account</DialogTitle>
           <DialogDescription>
-            Select the bank and give this account a nickname. You can upload statements for it later.
+            Enter your account details. You can upload statements for it later.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -78,27 +83,51 @@ export function AddAccountModal({ open, onOpenChange, onAdded }) {
             <FormField
               label="Account name"
               required
-              error={errors.name?.message}
-              id="name"
-              hint="e.g. Primary, Savings"
+              error={errors.accountName?.message}
+              id="accountName"
+              hint="e.g. Personal checking, business savings, etc."
             >
               <Input
                 type="text"
                 placeholder="My account"
-                {...register("name")}
+                {...register("accountName")}
               />
+            </FormField>
+            <FormField
+              label="Account type"
+              required
+              error={errors.accountType?.message}
+              id="accountType"
+            >
+              <Select {...register("accountType")}>
+                <option value="">Select account type</option>
+                <option value="checking">Checking</option>
+                <option value="savings">Savings</option>
+              </Select>
             </FormField>
             <FormField
               label="Account number"
               required
               error={errors.accountNumber?.message}
               id="accountNumber"
-              hint="Last 4 digits used for mask (e.g. 4521)"
+              hint="Last 4 digits will be used as a mask"
             >
               <Input
                 type="text"
                 placeholder="e.g. 1234567890124521"
                 {...register("accountNumber")}
+              />
+            </FormField>
+            <FormField
+              label="PDF password"
+              error={errors.password?.message}
+              id="password"
+              hint="Password to unlock statements for this account (if applicable)"
+            >
+              <Input
+                type="password"
+                placeholder="Leave blank if not needed"
+                {...register("password")}
               />
             </FormField>
           </div>

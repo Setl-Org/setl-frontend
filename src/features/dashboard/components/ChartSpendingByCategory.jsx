@@ -7,7 +7,7 @@ export function ChartSpendingByCategory({ data }) {
   const max = Math.max(...data.map((d) => d.value));
 
   return (
-    <div className="rounded-xl border border-border/80 bg-primary p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-border/70 bg-white p-4 shadow-sm sm:p-5">
       <h3 className="text-sm font-semibold text-secondary">Spending by category</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">AI-categorized</p>
       <div className="mt-4 space-y-3">

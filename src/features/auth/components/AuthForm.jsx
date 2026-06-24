@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -11,6 +10,7 @@ import { cn } from "@/lib/cn";
 import { useAuthStore } from "@/stores/authStore";
 import { trimFormData } from "@/lib/formUtils";
 import { loginSchema, signUpSchema } from "../schemas/authSchemas";
+import api from "@/lib/api";
 
 const MODES = { signIn: "signIn", signUp: "signUp" };
 
@@ -25,6 +25,7 @@ export function AuthForm({ mode, onSubmit }) {
   const isSignUp = mode === MODES.signUp;
   const schema = isSignUp ? signUpSchema : loginSchema;
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -43,19 +44,35 @@ export function AuthForm({ mode, onSubmit }) {
       const cleaned = trimFormData(data);
       if (onSubmit) {
         await onSubmit(cleaned);
+      } else if (isSignUp) {
+        const [firstName, ...rest] = (cleaned.name || "").trim().split(" ");
+        const lastName = rest.join(" ") || "-";
+        await api.post("/signup", {
+          email: cleaned.email,
+          password: cleaned.password,
+          firstName,
+          lastName,
+        });
+        toast.success("Account created. Sign in to continue.");
+        navigate("/auth?mode=signIn", { replace: true });
       } else {
-        // Placeholder: replace with real auth API
-        await new Promise((r) => setTimeout(r, 600));
-        toast.success(isSignUp ? "Account created. Sign in to continue." : "Signed in.");
-        if (isSignUp) {
-          navigate("/auth?mode=signIn", { replace: true });
-        } else {
-          useAuthStore.getState().login({ email: cleaned.email });
-          navigate("/dashboard", { replace: true });
-        }
+        const response = await api.post("/signin", {
+          email: cleaned.email,
+          password: cleaned.password,
+        });
+        const { user, token } = response.data.data;
+        useAuthStore.getState().login(user, token);
+        toast.success("Signed in.");
+        const from = location.state?.from ?? { pathname: "/dashboard" };
+        navigate(from, { replace: true });
       }
     } catch (err) {
-      toast.error(err?.message ?? (isSignUp ? "Sign up failed." : "Sign in failed."));
+      const message =
+        err?.response?.data?.message ||
+        err?.errorMessage ||
+        err?.message ||
+        (isSignUp ? "Sign up failed." : "Sign in failed.");
+      toast.error(message);
       throw err;
     }
   };
