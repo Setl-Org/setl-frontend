@@ -16,6 +16,27 @@ export const BANKS = [
   "1Link",
 ];
 
+/**
+ * Supported banks/wallets shown as logos in the hero trust bar.
+ *
+ * To use a real logo, drop an image in `public/banks/` and set `src`
+ * (e.g. src: "/banks/hbl.svg"). Until then, a brand-colored wordmark chip
+ * is rendered as a placeholder. `short` overrides the chip text; `color`
+ * is the chip background.
+ */
+export const BANK_LOGOS = [
+  { name: "HBL", slug: "hbl", color: "#0B6E3B", src: null },
+  { name: "MCB", slug: "mcb", color: "#00674A", src: null },
+  { name: "UBL", slug: "ubl", color: "#0067A0", src: null },
+  { name: "SadaPay", slug: "sadapay", short: "Sada", color: "#0E1116", src: null },
+  { name: "JazzCash", slug: "jazzcash", short: "Jazz", color: "#E2231A", src: null },
+  { name: "Easypaisa", slug: "easypaisa", short: "easypaisa", color: "#5CB531", src: null },
+  { name: "Faysal Bank", slug: "faysal", short: "Faysal", color: "#00713B", src: null },
+  { name: "Meezan Bank", slug: "meezan", short: "Meezan", color: "#00683C", src: null },
+  { name: "Raast", slug: "raast", color: "#0E8A6B", src: null },
+  { name: "1Link", slug: "1link", short: "1LINK", color: "#1B75BC", src: null },
+];
+
 export const HOW_IT_WORKS_STEPS = [
   {
     step: 1,
@@ -38,8 +59,52 @@ export const HOW_IT_WORKS_STEPS = [
   {
     step: 4,
     label: "Analytics & API",
-    hint: "View insights on the dashboard and access data via REST API.",
+    hint: "Insights on the dashboard and a REST API your product can build on today.",
     iconKey: "Zap",
+  },
+];
+
+/**
+ * Emotion stage (ELMR): the pain of building statement plumbing yourself.
+ * Used by PainSection.
+ */
+export const PAIN_POINTS = [
+  {
+    label: "Weeks lost hand-keying PDFs",
+    hint: "Your engineers reconcile statements by hand instead of building the product.",
+    iconKey: "Clock",
+  },
+  {
+    label: "Every bank is a different format",
+    hint: "HBL, Meezan, JazzCash — each statement breaks the parser you built last week.",
+    iconKey: "FileWarning",
+  },
+  {
+    label: "One layout change, pipeline down",
+    hint: "A bank tweaks its PDF and your data pipeline silently rots in production.",
+    iconKey: "Bug",
+  },
+];
+
+/**
+ * Reward stage (ELMR): the payoff — time and focus returned to the team.
+ * Used by OutcomeSection.
+ */
+export const OUTCOMES = [
+  {
+    stat: "Same-day",
+    label: "Signup to categorized data",
+    hint: "Upload a statement and get clean, structured data in an afternoon — not a quarter.",
+  },
+  {
+    stat: "0 lines",
+    label: "Of parser code to maintain",
+    hint: "No per-bank parsers, no format babysitting. We own the messy part.",
+  },
+  {
+    stat: "1 API",
+    label: "Your whole team builds on",
+    hint: "Transactions, balances, and AI categories — all behind one REST API.",
   },
 ];
 
@@ -80,6 +145,75 @@ export const COMPLIANCE_ITEMS = [
   "Dashboard analytics",
   "Batch upload by month",
   "REST API access",
+];
+
+/**
+ * Security/trust grouped into themes (reframed around user control).
+ * Used by ComplianceSection.
+ */
+export const COMPLIANCE_GROUPS = [
+  {
+    title: "Your data stays in Pakistan",
+    iconKey: "MapPin",
+    points: ["Hosted in-country", "SBP-compliant", "Data residency by default"],
+  },
+  {
+    title: "Encrypted end to end",
+    iconKey: "Lock",
+    points: ["AES-256-GCM at rest", "TLS 1.3 in transit", "Encrypted backups"],
+  },
+  {
+    title: "You control access",
+    iconKey: "KeyRound",
+    points: ["Scoped API keys", "Secure REST access", "Revoke keys anytime"],
+  },
+];
+
+/**
+ * Product-true metrics for the credibility band (no fabricated scale stats).
+ * `value` is animated with a count-up; `display` is shown verbatim.
+ * Used by MetricsSection.
+ */
+export const METRICS = [
+  { value: 10, suffix: "+", label: "Banks & wallets parsed" },
+  { value: 100, suffix: "%", label: "Transactions AI-categorized" },
+  { display: "AES-256", label: "Encryption at rest" },
+  { display: "🇵🇰 PK", label: "Where your data lives" },
+];
+
+/** Footer navigation grouped into columns. Used by Footer. */
+export const FOOTER_COLUMNS = [
+  {
+    title: "Product",
+    links: [
+      { label: "Features", href: "#features" },
+      { label: "Pricing", href: "#pricing" },
+      { label: "Security", href: "#security" },
+      { label: "Dashboard", href: "/auth", internal: true },
+    ],
+  },
+  {
+    title: "Developers",
+    links: [
+      { label: "API access", href: "#api" },
+      { label: "Get API keys", href: "/auth", internal: true },
+      { label: "Supported banks", href: "#features" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "Contact", href: "#contact" },
+      { label: "Talk to sales", href: "mailto:contact@setl.dev" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy", href: "mailto:contact@setl.dev" },
+      { label: "Terms", href: "mailto:contact@setl.dev" },
+    ],
+  },
 ];
 
 /** Framer Motion variants for staggered fade-in-up (landing sections). */
