@@ -186,24 +186,33 @@ export const FOOTER_COLUMNS = [
   {
     title: "Product",
     links: [
-      { label: "Features", href: "#features" },
-      { label: "Pricing", href: "#pricing" },
-      { label: "Security", href: "#security" },
+      { label: "Features", href: "/#features", internal: true },
+      { label: "Pricing", href: "/#pricing", internal: true },
+      { label: "Security", href: "/#security", internal: true },
       { label: "Dashboard", href: "/auth", internal: true },
+    ],
+  },
+  {
+    title: "Use cases",
+    links: [
+      { label: "Lending & underwriting", href: "/use-cases#lending", internal: true },
+      { label: "Personal finance", href: "/use-cases#pfm", internal: true },
+      { label: "Accounting", href: "/use-cases#accounting", internal: true },
+      { label: "All use cases", href: "/use-cases", internal: true },
     ],
   },
   {
     title: "Developers",
     links: [
-      { label: "API access", href: "#api" },
+      { label: "API access", href: "/#api", internal: true },
       { label: "Get API keys", href: "/auth", internal: true },
-      { label: "Supported banks", href: "#features" },
+      { label: "Supported banks", href: "/#features", internal: true },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "Contact", href: "#contact" },
+      { label: "Contact", href: "/#contact", internal: true },
       { label: "Talk to sales", href: "mailto:contact@setl.dev" },
     ],
   },
