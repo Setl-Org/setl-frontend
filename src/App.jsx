@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ScrollToHash } from "@/components/ScrollToHash";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/layout";
 import { HomePage } from "@/features/home";
+import { UseCasesPage } from "@/features/usecases";
 import { AuthPage } from "@/features/auth";
 import { DashboardPage } from "@/features/dashboard";
 import { NotFoundPage } from "@/features/not-found";
@@ -12,9 +14,11 @@ import { DeveloperPortalPage } from "@/features/developer/DeveloperPortalPage";
 function App() {
   return (
     <ErrorBoundary>
+      <ScrollToHash />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/use-cases" element={<UseCasesPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route
             path="/dashboard"
