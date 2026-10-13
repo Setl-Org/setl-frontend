@@ -213,14 +213,14 @@ export const FOOTER_COLUMNS = [
     title: "Company",
     links: [
       { label: "Contact", href: "/#contact", internal: true },
-      { label: "Talk to sales", href: "mailto:contact@setl.dev" },
+      { label: "Talk to sales", href: "mailto:hatif@joinsetl.com" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "mailto:contact@setl.dev" },
-      { label: "Terms", href: "mailto:contact@setl.dev" },
+      { label: "Privacy", href: "mailto:hatif@joinsetl.com" },
+      { label: "Terms", href: "mailto:hatif@joinsetl.com" },
     ],
   },
 ];
