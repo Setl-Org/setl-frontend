@@ -15,8 +15,8 @@ export function CtaSection() {
       <AnimatedSection className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
         <h2 className="section-title">Ship the thing you set out to build.</h2>
         <p className="section-subtitle mt-2 sm:mt-4">
-          Upload your first statement and see clean, categorized data in
-          minutes. No bank integration, no SDK.
+          Get API access and tell us which institutions your users need.
+          Bank connections open with partner banks.
         </p>
         <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
           <motion.div

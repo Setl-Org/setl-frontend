@@ -40,71 +40,71 @@ export const BANK_LOGOS = [
 export const HOW_IT_WORKS_STEPS = [
   {
     step: 1,
-    label: "Sign in",
-    hint: "Access your dashboard in seconds. No direct bank connection.",
-    iconKey: "LogIn",
+    label: "Your user consents",
+    hint: "They approve exactly what your app can read. Access is scoped and can be revoked.",
+    iconKey: "ShieldCheck",
   },
   {
     step: 2,
-    label: "Select bank & upload",
-    hint: "Pick your bank, then upload PDF account statements by month.",
-    iconKey: "FileUp",
+    label: "They connect their bank",
+    hint: "Authentication stays on the bank's own channel. Setl never sees the password.",
+    iconKey: "Landmark",
   },
   {
     step: 3,
-    label: "We parse",
-    hint: "We extract and categorize every transaction securely.",
-    iconKey: "FileSearch",
+    label: "Setl normalizes",
+    hint: "Accounts, balances, and transactions come back in one schema, including Raast and 1Link references.",
+    iconKey: "Layers",
   },
   {
     step: 4,
-    label: "Analytics & API",
-    hint: "Insights on the dashboard and a REST API your product can build on today.",
+    label: "You call one API",
+    hint: "Your product reads every connected account through the same REST API.",
     iconKey: "Zap",
   },
 ];
 
 /**
- * Emotion stage (ELMR): the pain of building statement plumbing yourself.
+ * Emotion stage (ELMR): the cost of integrating each bank yourself.
  * Used by PainSection.
  */
 export const PAIN_POINTS = [
   {
-    label: "Weeks lost hand-keying PDFs",
-    hint: "Your engineers reconcile statements by hand instead of building the product.",
-    iconKey: "Clock",
+    label: "A new integration for every bank",
+    hint: "HBL, Meezan, JazzCash — each institution is its own project, contract, and maintenance burden.",
+    iconKey: "Building2",
   },
   {
-    label: "Every bank is a different format",
-    hint: "HBL, Meezan, JazzCash — each statement breaks the parser you built last week.",
-    iconKey: "FileWarning",
+    label: "Credentials you should never hold",
+    hint: "Shared logins and screen-scraping put your users, and your license, at risk.",
+    iconKey: "KeyRound",
   },
   {
-    label: "One layout change, pipeline down",
-    hint: "A bank tweaks its PDF and your data pipeline silently rots in production.",
-    iconKey: "Bug",
+    label: "No standard account-data layer",
+    hint: "Money already moves on Raast and 1Link. A consented way to read the account does not.",
+    iconKey: "Unlink",
   },
 ];
 
 /**
- * Reward stage (ELMR): the payoff — time and focus returned to the team.
+ * Reward stage (ELMR): one connector, one schema, no stored bank logins.
  * Used by OutcomeSection.
  */
 export const OUTCOMES = [
   {
-    stat: "Same-day",
-    label: "Signup to categorized data",
-    hint: "Upload a statement and get clean, structured data in an afternoon — not a quarter.",
-  },
-  {
-    stat: "0 lines",
-    label: "Of parser code to maintain",
-    hint: "No per-bank parsers, no format babysitting. We own the messy part.",
-  },
-  {
     stat: "1 API",
-    label: "Your whole team builds on",
-    hint: "Transactions, balances, and AI categories — all behind one REST API.",
+    label: "For every connected account",
+    hint: "Balances and transactions in one schema. Your app calls Setl, not each bank.",
+  },
+  {
+    stat: "0",
+    label: "Bank logins you store",
+    hint: "People authenticate on the bank's own channel. Consent is scoped and revocable.",
+  },
+  {
+    stat: "1 schema",
+    label: "Across institutions",
+    hint: "The same account and transaction shape, built for Raast and 1Link references.",
   },
 ];
 
@@ -118,14 +118,14 @@ export const CURRENCIES = [
 export const PRICING_PLANS = [
   {
     name: "Pay as you go",
-    statements: "Coming soon",
+    connections: "Coming soon",
     analytics: { PKR: "Included", AED: "Included", SAR: "Included" },
     api: { PKR: "Included", AED: "Included", SAR: "Included" },
     support: { PKR: "Email support", AED: "Email support", SAR: "Email support" },
   },
   {
     name: "Growth / Scale",
-    statements: "Coming soon",
+    connections: "Coming soon",
     analytics: { PKR: "Advanced", AED: "Advanced", SAR: "Advanced" },
     api: { PKR: "Higher limits", AED: "Higher limits", SAR: "Higher limits" },
     support: { PKR: "Priority support", AED: "Priority support", SAR: "Priority support" },
@@ -135,15 +135,15 @@ export const PRICING_PLANS = [
 export const COMPLIANCE_ITEMS = [
   "Data in Pakistan",
   "AES-256-GCM encryption",
-  "PDF statement parsing",
-  "Multi-bank support",
-  "AI categorization",
+  "Consent-scoped access",
+  "Bank connectivity API",
+  "Transaction categories",
   "Secure API access",
   "TLS 1.3",
   "Encrypted at rest",
-  "SBP-compliant",
+  "Designed for SBP user-data rules",
   "Dashboard analytics",
-  "Batch upload by month",
+  "Revocable consent",
   "REST API access",
 ];
 
@@ -155,7 +155,7 @@ export const COMPLIANCE_GROUPS = [
   {
     title: "Your data stays in Pakistan",
     iconKey: "MapPin",
-    points: ["Hosted in-country", "SBP-compliant", "Data residency by default"],
+    points: ["Hosted in-country", "Designed for SBP user-data rules", "Data residency by default"],
   },
   {
     title: "Encrypted end to end",
@@ -175,10 +175,10 @@ export const COMPLIANCE_GROUPS = [
  * Used by MetricsSection.
  */
 export const METRICS = [
-  { value: 10, suffix: "+", label: "Banks & wallets parsed" },
-  { value: 100, suffix: "%", label: "Transactions AI-categorized" },
+  { display: "1", label: "API for connected accounts" },
+  { display: "0", label: "Bank passwords stored" },
   { display: "AES-256", label: "Encryption at rest" },
-  { display: "🇵🇰 PK", label: "Where your data lives" },
+  { display: "PK", label: "Data stays in Pakistan" },
 ];
 
 /** Footer navigation grouped into columns. Used by Footer. */
@@ -206,7 +206,7 @@ export const FOOTER_COLUMNS = [
     links: [
       { label: "API access", href: "/#api", internal: true },
       { label: "Get API keys", href: "/auth", internal: true },
-      { label: "Supported banks", href: "/#features", internal: true },
+      { label: "How it works", href: "/#features", internal: true },
     ],
   },
   {

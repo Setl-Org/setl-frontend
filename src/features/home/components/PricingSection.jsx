@@ -19,8 +19,8 @@ export function PricingSection({ currency = "PKR" }) {
         <AnimatedSection className="mx-auto max-w-2xl text-center">
           <h2 className="section-title">Pricing</h2>
           <p className="section-subtitle mt-2 sm:mt-4">
-            Upload statements, get analytics, and use the API. Pricing is on the way —
-            plans and per-statement rates will be announced soon.
+            API access for connected accounts. Plan details will be announced
+            as bank connections open.
           </p>
         </AnimatedSection>
         <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:mt-16 sm:grid-cols-2 sm:gap-8">

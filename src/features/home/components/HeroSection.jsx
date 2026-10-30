@@ -63,9 +63,9 @@ export function HeroSection() {
                 )}
                 style={{ letterSpacing: "-0.03em", lineHeight: 1.1 }}
               >
-                Stop building statement parsers.
+                One API for Pakistani bank accounts.
                 <span className="block bg-[linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b,#22c55e,#3b82f6,#7c3aed)] bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer">
-                  Start shipping your product.
+                  Your users connect. You build.
                 </span>
               </motion.h1>
               <motion.p
@@ -76,17 +76,9 @@ export function HeroSection() {
                 )}
                 style={{ lineHeight: 1.7 }}
               >
-                Every week wrangling bank PDFs is a week your competitors are
-                shipping. Setl turns raw statements into clean,{" "}
-                <span
-                  className={cn(
-                    "font-semibold italic",
-                    dark ? "text-primary" : "text-secondary"
-                  )}
-                >
-                  AI-categorized
-                </span>{" "}
-                data and a REST API — so you build the product, not the plumbing.
+                Setl is the connector between banks and the fintechs built on
+                them. A customer consents, the account connects, and your app
+                gets balances and transactions through one API.
               </motion.p>
               <motion.div
                 variants={FADE_IN_UP}
@@ -133,7 +125,7 @@ export function HeroSection() {
                   dark ? "text-primary/60" : "text-muted-foreground"
                 )}
               >
-                No bank connection required. Just upload a PDF.
+                Connections open with partner banks. Setl never stores login credentials.
               </motion.p>
             </motion.div>
 

@@ -89,6 +89,9 @@ export function AuthPage() {
                   {isSignIn ? "Sign in to continue." : "Get started in seconds."}
                 </span>
               </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                The bank-account API for Pakistani fintechs.
+              </p>
             </div>
 
             <div className="mb-6 flex rounded-xl bg-muted/60 p-1.5">

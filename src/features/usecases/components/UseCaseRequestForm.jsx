@@ -75,8 +75,8 @@ export function UseCaseRequestForm() {
           </h2>
           <p className="section-subtitle">
             Don&apos;t see your workflow above? Describe it and we&apos;ll show
-            you how Setl turns Pakistani bank statements into the data your
-            product needs.
+            you how a Setl connection supplies the account data your product
+            needs.
           </p>
         </AnimatedSection>
 
@@ -127,7 +127,7 @@ export function UseCaseRequestForm() {
                 rows={4}
                 value={form.useCase}
                 onChange={update("useCase")}
-                placeholder="A lending app that needs income and cash-flow data parsed from HBL and Meezan statements…"
+                placeholder="A lending app that needs income and cash flow from the HBL and Meezan accounts a borrower connects…"
                 className={cn(
                   INPUT_CLASS,
                   "h-auto resize-none py-2",

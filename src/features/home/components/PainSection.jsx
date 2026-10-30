@@ -1,17 +1,16 @@
 import { motion } from "framer-motion";
-import { Clock, FileWarning, Bug } from "lucide-react";
+import { Building2, KeyRound, Unlink } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import { PAIN_POINTS } from "../constants";
 
 const PAIN_ICONS = {
-  Clock,
-  FileWarning,
-  Bug,
+  Building2,
+  KeyRound,
+  Unlink,
 };
 
 /**
- * PainSection - Emotion stage (ELMR). Names the cost of building statement
- * plumbing in-house, so the visitor feels the loss before we present the fix.
+ * PainSection - Names the cost of integrating each bank yourself.
  */
 export function PainSection() {
   return (
@@ -19,11 +18,11 @@ export function PainSection() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <AnimatedSection className="mx-auto max-w-2xl text-center">
           <h2 className="section-title">
-            You didn&apos;t start a fintech to parse PDFs.
+            You didn&apos;t start a fintech to integrate every bank.
           </h2>
           <p className="section-subtitle">
-            Bank statements are the tax every team pays before the real work
-            begins. It quietly burns the time you meant to spend shipping.
+            Pakistan already moves money. The missing piece is a standard,
+            consented way for an app to read the account behind it.
           </p>
         </AnimatedSection>
 
