@@ -1,4 +1,4 @@
-# SETL Frontend
+# SETL Frontend 
 
 A modern React frontend built with Vite, Tailwind CSS v4, and following the standards in `FRONTEND_STANDARDS.md`.
 
