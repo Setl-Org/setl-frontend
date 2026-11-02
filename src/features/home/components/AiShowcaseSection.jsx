@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import { FADE_IN_UP, STAGGER } from "../constants";
 
-/** Example raw statement lines and how Setl enriches them. */
+/** Example raw bank descriptions and how Setl enriches them. */
 const EXAMPLES = [
   { raw: "1-FOODPANDA PK KARACHI", merchant: "Foodpanda", category: "Food & Dining", amount: "-2,499" },
   { raw: "TFR CAREEM TECHNOLOGIES", merchant: "Careem", category: "Transport", amount: "-850" },
@@ -12,8 +12,8 @@ const EXAMPLES = [
 ];
 
 /**
- * AiShowcaseSection - Makes AI categorization tangible: raw, messy statement
- * lines on the left, clean enriched data on the right.
+ * AiShowcaseSection - Makes categorization tangible: raw bank descriptions
+ * on the left, clean enriched data on the right.
  */
 export function AiShowcaseSection() {
   return (
@@ -28,8 +28,8 @@ export function AiShowcaseSection() {
             From cryptic bank text to clean data
           </h2>
           <p className="section-subtitle">
-            Setl reads the raw, inconsistent descriptions on every statement and
-            turns them into a clear merchant and category — automatically.
+            Setl reads the raw descriptions a connected account returns and
+            turns them into a clear merchant and category.
           </p>
         </AnimatedSection>
 
@@ -43,7 +43,7 @@ export function AiShowcaseSection() {
           {/* Column labels */}
           <div className="hidden grid-cols-[1fr_auto_1fr] items-center gap-4 px-2 sm:grid">
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground/70">
-              Raw statement line
+              Raw bank description
             </span>
             <span />
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-tertiary">

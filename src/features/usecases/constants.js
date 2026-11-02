@@ -1,8 +1,8 @@
 /**
  * Use-cases feature constants.
- * Each use case mirrors a classic open-banking workflow, reframed around what
- * Setl actually does: turn uploaded PDF bank statements into clean,
- * AI-categorized transaction data and a REST API — built for Pakistani fintechs.
+ * Each use case is a workflow a builder ships on Setl's bank-connectivity API:
+ * consented Pakistani account data — balances, transactions, and categories —
+ * through one integration.
  * `iconKey` maps to a lucide-react icon in UseCasesPage.
  */
 export const USE_CASES = [
@@ -11,11 +11,11 @@ export const USE_CASES = [
     iconKey: "Landmark",
     title: "Lending & underwriting",
     summary:
-      "Verify income and cash flow straight from a borrower's statements — no manual review, no waiting on the bank.",
+      "Read income and cash flow from the accounts a borrower connects, and underwrite on structured transactions.",
     points: [
-      "Income and salary detection from real transactions",
+      "Income and salary patterns from real transactions",
       "Cash-flow trends to score thin-file applicants",
-      "Faster, evidence-backed credit decisions",
+      "Evidence-backed credit decisions from connected accounts",
     ],
   },
   {
@@ -23,11 +23,11 @@ export const USE_CASES = [
     iconKey: "Wallet",
     title: "Personal finance management",
     summary:
-      "Power budgeting and money apps with categorized transactions your users instantly recognize.",
+      "Power budgeting and money apps with categorized transactions from the accounts a user connects.",
     points: [
-      "Every transaction AI-categorized out of the box",
-      "Spending insights across multiple banks and wallets",
-      "A unified view from statements your users already have",
+      "Transactions categorized for the apps you ship",
+      "Spending across multiple banks and wallets",
+      "One view of every account the user connects",
     ],
   },
   {
@@ -35,11 +35,11 @@ export const USE_CASES = [
     iconKey: "Calculator",
     title: "Accounting & bookkeeping",
     summary:
-      "Auto-reconcile and categorize business transactions so the books close themselves.",
+      "Reconcile and categorize business transactions from connected accounts so the books can close.",
     points: [
-      "Clean ledger entries from messy PDF statements",
-      "Reconcile across HBL, Meezan, UBL and more",
-      "Export structured data to your accounting stack",
+      "Ledger-ready entries from connected business accounts",
+      "The same schema for every institution a business connects",
+      "Structured data your accounting stack can import",
     ],
   },
   {
@@ -47,11 +47,11 @@ export const USE_CASES = [
     iconKey: "ShieldCheck",
     title: "Fraud & risk",
     summary:
-      "Spot anomalies and confirm real account activity from genuine statement data.",
+      "Give a risk product real account activity from the connection, so anomalies sit on genuine transactions.",
     points: [
       "Surface unusual flows and duplicate entries",
-      "Cross-check declared income against the statement",
-      "Build risk models on structured, reliable data",
+      "Cross-check declared income against connected activity",
+      "Build risk models on structured account data",
     ],
   },
   {
@@ -59,11 +59,11 @@ export const USE_CASES = [
     iconKey: "BadgeCheck",
     title: "Identity & account verification",
     summary:
-      "Confirm account ownership and details from statement metadata during onboarding.",
+      "Use the connected account to confirm who holds it and that it is in use during onboarding.",
     points: [
-      "Match account holder name and number",
-      "Validate the account is active and in use",
-      "Reduce onboarding fraud before it starts",
+      "Read the account holder and account details the connection returns",
+      "See that the account is active and in use",
+      "Catch mismatched accounts before money moves",
     ],
   },
   {
@@ -71,11 +71,11 @@ export const USE_CASES = [
     iconKey: "TrendingUp",
     title: "Wealth & investing",
     summary:
-      "Give users a full financial picture by aggregating data from every statement.",
+      "Give users a financial picture by aggregating every account they connect.",
     points: [
-      "Net-worth and balance trends over time",
-      "Holdings and inflows pulled from statements",
-      "A complete profile to personalize advice",
+      "Balance trends over time",
+      "Inflows across connected accounts",
+      "A profile your advice product can personalize",
     ],
   },
   {
@@ -83,9 +83,9 @@ export const USE_CASES = [
     iconKey: "ReceiptText",
     title: "Expense management",
     summary:
-      "Track and categorize company spend from corporate and card statements automatically.",
+      "Track and categorize company spend from the corporate accounts a business connects.",
     points: [
-      "Categorize every business expense by month",
+      "Categorize business expenses as they post",
       "Flag out-of-policy spend for review",
       "Feed clean spend data into approval flows",
     ],
@@ -95,11 +95,11 @@ export const USE_CASES = [
     iconKey: "ArrowLeftRight",
     title: "Payments & reconciliation",
     summary:
-      "Match incoming payments against transaction records without spreadsheets.",
+      "Match incoming payments against connected-account transactions, including local rails.",
     points: [
-      "Reconcile collections against statement lines",
+      "Reconcile collections against transaction lines",
       "Detect missed or partial settlements",
-      "Close the loop on Raast and 1Link transfers",
+      "Follow Raast and 1Link transfers in the same feed",
     ],
   },
 ];

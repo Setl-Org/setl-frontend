@@ -3,8 +3,8 @@ import { AnimatedSection } from "./AnimatedSection";
 import { OUTCOMES, FADE_IN_UP, STAGGER } from "../constants";
 
 /**
- * OutcomeSection - Reward stage (ELMR). Shows the payoff once Setl owns the
- * statement plumbing: the time and focus the team gets back to ship.
+ * OutcomeSection - The payoff of one bank connector: one API, one schema,
+ * and no stored bank logins.
  */
 export function OutcomeSection() {
   return (

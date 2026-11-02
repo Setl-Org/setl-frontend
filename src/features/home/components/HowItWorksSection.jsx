@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { FileUp, FileSearch, LogIn, Zap } from "lucide-react";
+import { Landmark, Layers, ShieldCheck, Zap } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import { HOW_IT_WORKS_STEPS } from "../constants";
 
 const STEP_ICONS = {
-  LogIn,
-  FileUp,
-  FileSearch,
+  ShieldCheck,
+  Landmark,
+  Layers,
   Zap,
 };
 
@@ -25,11 +25,11 @@ export function HowItWorksSection() {
             How it works
           </span>
           <h2 className="section-title mt-4">
-            From PDF to production in four steps
+            From consent to one API in four steps
           </h2>
           <p className="section-subtitle">
-            Sign in, upload statements by bank and month, get analytics and API
-            access.
+            Your user consents, connects their bank, and your app reads one
+            API. Connections open with partner institutions.
           </p>
         </AnimatedSection>
 

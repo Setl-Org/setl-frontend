@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { BUTTON_TERTIARY_CLASS } from "@/lib/styles";
 
 const ROW_ITEMS = [
-  { key: "statements", label: "Statements" },
+  { key: "connections", label: "Connections" },
   { key: "analytics", label: "Analytics" },
   { key: "api", label: "API" },
   { key: "support", label: "Support" },
@@ -15,7 +15,7 @@ const ROW_ITEMS = [
  * PricingCard - Single pricing plan card with CTA.
  *
  * @param {Object} props
- * @param {{ name: string, statements: Object, analytics: Object, api: Object, support: Object }} props.plan
+ * @param {{ name: string, connections: Object, analytics: Object, api: Object, support: Object }} props.plan
  * @param {string} props.currency - Currency key (PKR | AED | SAR)
  * @param {number} props.index - Index for stagger animation
  */

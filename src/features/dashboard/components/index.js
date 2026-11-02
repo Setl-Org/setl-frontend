@@ -7,3 +7,4 @@ export { StatCard } from "./StatCard.jsx";
 export { TransactionsTable } from "./TransactionsTable.jsx";
 export { UploadStatementsModal } from "./UploadStatementsModal.jsx";
 export { DashboardSidebar } from "./DashboardSidebar.jsx";
+export { DashboardNav } from "./DashboardNav.jsx";

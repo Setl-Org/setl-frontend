@@ -17,8 +17,8 @@ export function Footer() {
               className="h-8 w-auto brightness-0 invert"
             />
             <p className="mt-4 text-sm leading-relaxed text-primary/50">
-              Statements into clean, AI-categorized data and an API — built for
-              Pakistani fintechs.
+              One API between Pakistani bank accounts and the fintechs built on
+              them.
             </p>
           </div>
 

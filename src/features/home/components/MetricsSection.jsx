@@ -34,8 +34,8 @@ export function MetricsSection() {
         <AnimatedSection className="mx-auto max-w-2xl text-center">
           <h2 className="section-title">Built to be trusted from day one</h2>
           <p className="section-subtitle">
-            No black boxes — just clean data, strong encryption, and full
-            coverage of the banks your users actually use.
+            Consent-scoped access, encryption at rest, and account data that
+            stays in Pakistan.
           </p>
         </AnimatedSection>
 
