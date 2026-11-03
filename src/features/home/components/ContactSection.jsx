@@ -67,9 +67,8 @@ export function ContactSection() {
             Start building better financial products
           </h2>
           <p className="section-subtitle">
-            Tell us what you&apos;re building. We&apos;ll show you how Setl turns
-            your statements into clean data and API access — and get you early
-            access.
+            Tell us what you&apos;re building and which banks your users hold.
+            We&apos;ll walk you through the API and how a connection opens.
           </p>
         </AnimatedSection>
 
@@ -120,7 +119,7 @@ export function ContactSection() {
                 rows={3}
                 value={form.message}
                 onChange={update("message")}
-                placeholder="A lending app that needs categorized transaction data…"
+                placeholder="A lending app that needs cash flow from the accounts a borrower connects…"
                 className={cn(INPUT_CLASS, "h-auto resize-none py-2")}
               />
             </Field>

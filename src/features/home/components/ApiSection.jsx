@@ -9,8 +9,8 @@ import { AnimatedSection } from "./AnimatedSection";
 const TABS = ["Request", "Response"];
 
 /**
- * ApiSection - Developer section: REST API for parsed statement data, shown
- * as a tabbed request/response panel.
+ * ApiSection - Developer section: one REST API for connected account data,
+ * shown as a tabbed request/response panel.
  */
 export function ApiSection() {
   const [tab, setTab] = useState("Response");
@@ -33,15 +33,15 @@ export function ApiSection() {
             For developers
           </span>
           <h2 className="section-title mt-4 text-primary">
-            Skip the PDF. Get the API keys.
+            One API. Every connected account.
           </h2>
           <p
             className="mx-auto mt-4 max-w-2xl text-lg text-secondary-foreground/80"
             style={{ lineHeight: 1.6 }}
           >
-            You build the experience. We&apos;ll handle the data — parsed
-            transactions, balances, and AI-enriched categories behind one simple
-            REST API.
+            You build the experience. Setl returns accounts, balances, and
+            transactions from the banks your users connect — behind one REST
+            API.
           </p>
 
           <motion.div

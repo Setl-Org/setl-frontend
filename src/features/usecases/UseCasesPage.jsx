@@ -63,12 +63,11 @@ export function UseCasesPage() {
             Use cases
           </span>
           <h1 className="section-title mt-5">
-            One statement API. Every financial workflow.
+            One bank API. Every financial workflow.
           </h1>
           <p className="section-subtitle mt-4">
-            Whatever you&apos;re building — lending, budgeting, accounting, or
-            risk — Setl turns Pakistani bank statements into clean,
-            AI-categorized data your product can act on today.
+            Lending, budgeting, accounting, and reconciliation all read
+            consented Pakistani bank accounts through one Setl API.
           </p>
         </AnimatedSection>
       </section>
@@ -128,8 +127,8 @@ export function UseCasesPage() {
         <AnimatedSection className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="section-title">Don&apos;t see your use case?</h2>
           <p className="section-subtitle mt-2 sm:mt-4">
-            If it runs on bank statement data, Setl can power it. Upload your
-            first statement and see structured data in minutes.
+            If it needs consented account data, Setl can power it. Get API
+            access and tell us which institutions you need.
           </p>
           <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
             <motion.div
