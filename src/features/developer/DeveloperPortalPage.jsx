@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
-import api from "@/lib/api";
+import api, { browserSafeApiBase } from "@/lib/api";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/Dialog";
@@ -21,12 +21,19 @@ const ALL_SCOPES = [
   { value: "dashboard:read",    label: "Dashboard",    description: "View financial dashboard and reports" },
 ];
 
-const EXTERNAL_API_BASE =
+const EXTERNAL_API_BASE = browserSafeApiBase(
   import.meta.env.VITE_EXTERNAL_API_BASE_URL ||
-  (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1").replace(
-    /\/api\/v1$/,
-    "/api/external/v1"
-  );
+    (import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1").replace(
+      /\/api\/v1$/,
+      "/api/external/v1"
+    ),
+  { absolute: true }
+);
+
+const API_BASE_FOR_DOCS = browserSafeApiBase(
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1",
+  { absolute: true }
+);
 
 function copyToClipboard(text, label) {
   navigator.clipboard.writeText(text).then(
@@ -638,7 +645,7 @@ function ApiReferenceCard() {
             <ol className="list-inside list-decimal space-y-1.5 text-xs">
               <li>Redirect the user to <code className="bg-muted rounded px-1 font-mono">GET {window.location.origin}/oauth/authorize?response_type=code&client_id=…&redirect_uri=…&scope=…</code></li>
               <li>User approves → Setl redirects to your <code className="bg-muted rounded px-1 font-mono">redirect_uri?code=…</code></li>
-              <li>Exchange the code server-side: <code className="bg-muted rounded px-1 font-mono">POST {import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1"}/oauth/token</code></li>
+              <li>Exchange the code server-side: <code className="bg-muted rounded px-1 font-mono">POST {API_BASE_FOR_DOCS}/oauth/token</code></li>
               <li>Use the <code className="bg-muted rounded px-1 font-mono">access_token</code> as a Bearer token on external API calls</li>
             </ol>
           </div>
