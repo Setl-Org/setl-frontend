@@ -11,6 +11,7 @@ import {
   ChartBalanceTrend,
   TransactionsTable,
   AccountsSection,
+  ConnectedAppsSection,
   AddAccountModal,
   UploadStatementsModal,
   DashboardNav,
@@ -195,6 +196,10 @@ export function DashboardPage() {
                 onUploadStatements={() => setUploadOpen(true)}
               />
             </Skeleton>
+          </section>
+
+          <section id="connected-apps" className="scroll-mt-20">
+            <ConnectedAppsSection />
           </section>
 
           {/* Stat cards */}

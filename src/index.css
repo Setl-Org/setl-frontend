@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Marketing site. The app shell keeps Plus Jakarta Sans. */
+.mkt {
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  color: #141414;
+  background: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt *,
+  .mkt *::before,
+  .mkt *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* SETL Color Theme: Primary White, Secondary Black, Tertiary Purple */
 @theme {
   --color-primary: #ffffff;
@@ -25,6 +41,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
 
   body {

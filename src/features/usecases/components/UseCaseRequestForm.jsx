@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/cn";
-import { INPUT_CLASS, BUTTON_TERTIARY_CLASS } from "@/lib/styles";
+import { INPUT_CLASS } from "@/lib/styles";
 import { AnimatedSection } from "@/features/home/components";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,10 +67,7 @@ export function UseCaseRequestForm() {
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
         {/* Left — pitch */}
         <AnimatedSection className="text-left">
-          <span className="inline-flex items-center rounded-full border border-tertiary/30 bg-tertiary/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-tertiary">
-            Request a use case
-          </span>
-          <h2 className="section-title mt-4">
+          <h2 className="text-3xl font-semibold tracking-tight text-[#141414]">
             Tell us what you want to build
           </h2>
           <p className="section-subtitle">
@@ -88,7 +85,7 @@ export function UseCaseRequestForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.5 }}
-          className="rounded-2xl border border-border/80 bg-primary p-6 shadow-lg sm:p-8"
+          className="rounded-3xl border border-[#eceae4] bg-white p-6 sm:p-8"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Full name" error={errors.name}>
@@ -141,10 +138,7 @@ export function UseCaseRequestForm() {
             disabled={submitting}
             whileHover={submitting ? undefined : { scale: 1.01 }}
             whileTap={submitting ? undefined : { scale: 0.99 }}
-            className={cn(
-              BUTTON_TERTIARY_CLASS,
-              "mt-6 min-h-[48px] w-full rounded-xl bg-[linear-gradient(135deg,#8b5cf6,#7c3aed,#6d28d9)] py-3 text-base font-semibold shadow-lg shadow-tertiary/30 ring-1 ring-inset ring-white/20 transition-all hover:shadow-xl hover:shadow-tertiary/40 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
-            )}
+            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-[#141414] text-sm font-medium text-white hover:bg-[#2a2a2a] disabled:opacity-60"
           >
             {submitting ? "Sending…" : "Request use case"}
           </motion.button>

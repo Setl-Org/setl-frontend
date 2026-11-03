@@ -3,27 +3,7 @@
  * Used by HeroSection, HowItWorksSection, PricingSection, ComplianceSection.
  */
 
-export const BANKS = [
-  "HBL",
-  "MCB",
-  "UBL",
-  "SadaPay",
-  "JazzCash",
-  "Easypaisa",
-  "Faysal Bank",
-  "Meezan Bank",
-  "Raast",
-  "1Link",
-];
-
-/**
- * Supported banks/wallets shown as logos in the hero trust bar.
- *
- * To use a real logo, drop an image in `public/banks/` and set `src`
- * (e.g. src: "/banks/hbl.svg"). Until then, a brand-colored wordmark chip
- * is rendered as a placeholder. `short` overrides the chip text; `color`
- * is the chip background.
- */
+/** Wordmarks only. Real bank logos stay off the site until a bank is connected. */
 export const BANK_LOGOS = [
   { name: "HBL", slug: "hbl", color: "#0B6E3B", src: null },
   { name: "MCB", slug: "mcb", color: "#00674A", src: null },
@@ -35,6 +15,19 @@ export const BANK_LOGOS = [
   { name: "Meezan Bank", slug: "meezan", short: "Meezan", color: "#00683C", src: null },
   { name: "Raast", slug: "raast", color: "#0E8A6B", src: null },
   { name: "1Link", slug: "1link", short: "1LINK", color: "#1B75BC", src: null },
+];
+
+export const BANKS = [
+  "HBL",
+  "MCB",
+  "UBL",
+  "SadaPay",
+  "JazzCash",
+  "Easypaisa",
+  "Faysal Bank",
+  "Meezan Bank",
+  "Raast",
+  "1Link",
 ];
 
 export const HOW_IT_WORKS_STEPS = [
@@ -186,16 +179,16 @@ export const FOOTER_COLUMNS = [
   {
     title: "Product",
     links: [
-      { label: "Features", href: "/#features", internal: true },
-      { label: "Pricing", href: "/#pricing", internal: true },
-      { label: "Security", href: "/#security", internal: true },
-      { label: "Dashboard", href: "/auth", internal: true },
+      { label: "Connect", href: "/products#connect", internal: true },
+      { label: "Accounts", href: "/products#accounts", internal: true },
+      { label: "Transactions", href: "/products#transactions", internal: true },
+      { label: "Pricing", href: "/pricing", internal: true },
     ],
   },
   {
     title: "Use cases",
     links: [
-      { label: "Lending & underwriting", href: "/use-cases#lending", internal: true },
+      { label: "Lending", href: "/use-cases#lending", internal: true },
       { label: "Personal finance", href: "/use-cases#pfm", internal: true },
       { label: "Accounting", href: "/use-cases#accounting", internal: true },
       { label: "All use cases", href: "/use-cases", internal: true },
@@ -204,23 +197,19 @@ export const FOOTER_COLUMNS = [
   {
     title: "Developers",
     links: [
-      { label: "API access", href: "/#api", internal: true },
+      { label: "Documentation", href: "/developers", internal: true },
+      { label: "Quickstart", href: "/developers#quickstart", internal: true },
+      { label: "API reference", href: "/developers#reference", internal: true },
       { label: "Get API keys", href: "/auth", internal: true },
-      { label: "How it works", href: "/#features", internal: true },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "Contact", href: "/#contact", internal: true },
-      { label: "Talk to sales", href: "mailto:hatif@joinsetl.com" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Privacy", href: "mailto:hatif@joinsetl.com" },
-      { label: "Terms", href: "mailto:hatif@joinsetl.com" },
+      { label: "About", href: "/about", internal: true },
+      { label: "Security", href: "/#security", internal: true },
+      { label: "Contact", href: "/pricing#contact", internal: true },
+      { label: "hatif@joinsetl.com", href: "mailto:hatif@joinsetl.com" },
     ],
   },
 ];

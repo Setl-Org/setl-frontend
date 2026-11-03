@@ -8,6 +8,7 @@ import {
   Building2,
   Receipt,
   Scale,
+  Link2,
   LayoutGrid,
   Code2,
   Activity,
@@ -41,6 +42,7 @@ const MAIN = [
 
 const PRODUCTS = [
   { label: "Accounts", Icon: Building2, hash: "#accounts", expandable: true },
+  { label: "Connected apps", Icon: Link2, hash: "#connected-apps" },
   { label: "Transactions", Icon: Receipt, hash: "#transactions", expandable: true },
   { label: "Reconciliation", Icon: Scale, expandable: true },
   { label: "All products", Icon: LayoutGrid },

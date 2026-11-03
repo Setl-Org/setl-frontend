@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Plus, Trash2, Copy, LayoutDashboard, LogOut, Code2,
   ShieldCheck, Loader2, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp,
-  Key, RefreshCw, Terminal, FileSpreadsheet, Sparkles,
+  Key, RefreshCw, Terminal, FileSpreadsheet, Sparkles, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
@@ -15,10 +15,9 @@ import {
 import { Button } from "@/components/ui/Button";
 
 const ALL_SCOPES = [
-  { value: "transactions:read", label: "Transactions", description: "View the user's transaction history" },
-  { value: "accounts:read",     label: "Accounts",     description: "View the user's connected bank accounts" },
+  { value: "transactions:read", label: "Transactions", description: "View transactions on the accounts the user selects" },
+  { value: "accounts:read",     label: "Accounts",     description: "View the accounts the user selects" },
   { value: "profile:read",      label: "Profile",      description: "View the user's profile information" },
-  { value: "dashboard:read",    label: "Dashboard",    description: "View financial dashboard and reports" },
 ];
 
 const EXTERNAL_API_BASE = browserSafeApiBase(
@@ -187,7 +186,13 @@ function CreateAppModal({ open, onOpenChange, onCreated }) {
 
 // ── Credentials Modal ────────────────────────────────────────────────────────
 
-function CredentialsModal({ open, onOpenChange, credentials }) {
+function CredentialsModal({
+  open,
+  onOpenChange,
+  credentials,
+  title = "App created",
+  description = "Save your client secret now — it will not be shown again.",
+}) {
   const [secretVisible, setSecretVisible] = useState(false);
 
   if (!credentials) return null;
@@ -198,10 +203,10 @@ function CredentialsModal({ open, onOpenChange, credentials }) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-green-500" />
-            App created
+            {title}
           </DialogTitle>
           <DialogDescription>
-            Save your client secret now — it will not be shown again.
+            {description}
           </DialogDescription>
         </DialogHeader>
 
@@ -271,12 +276,56 @@ function CredentialsModal({ open, onOpenChange, credentials }) {
 
 // ── App Card ────────────────────────────────────────────────────────────────
 
-function AppCard({ app, onDelete }) {
+function AppCard({ app, onDelete, onUpdated, onSecretRotated }) {
   const [urisExpanded, setUrisExpanded] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [rotating, setRotating] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [uriDraft, setUriDraft] = useState("");
+  const [savingUris, setSavingUris] = useState(false);
+
+  function openEdit() {
+    setUriDraft((app.redirect_uris ?? []).join("\n"));
+    setEditOpen(true);
+  }
+
+  async function handleSaveUris(e) {
+    e.preventDefault();
+    const redirectUris = uriDraft.split("\n").map((uri) => uri.trim()).filter(Boolean);
+    if (redirectUris.length === 0) {
+      toast.error("At least one redirect URI is required");
+      return;
+    }
+    setSavingUris(true);
+    try {
+      const { data } = await api.patch(`/oauth/clients/mine/${app.client_id}`, {
+        redirect_uris: redirectUris,
+      });
+      onUpdated(data.data);
+      setEditOpen(false);
+      toast.success("Redirect URIs updated");
+    } catch (err) {
+      toast.error(err?.response?.data?.message ?? "Failed to update redirect URIs");
+    } finally {
+      setSavingUris(false);
+    }
+  }
+
+  async function handleRotate() {
+    if (!window.confirm(`Rotate the secret for "${app.name}"? The current secret will stop working.`)) return;
+    setRotating(true);
+    try {
+      const { data } = await api.post(`/oauth/clients/mine/${app.client_id}/rotate-secret`);
+      onSecretRotated(data.data);
+    } catch (err) {
+      toast.error(err?.response?.data?.message ?? "Failed to rotate secret");
+    } finally {
+      setRotating(false);
+    }
+  }
 
   async function handleDelete() {
-    if (!window.confirm(`Delete "${app.name}"? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete "${app.name}"? Customers who connected this app will lose access.`)) return;
     setDeleting(true);
     try {
       await api.delete(`/oauth/clients/mine/${app.client_id}`);
@@ -311,7 +360,11 @@ function AppCard({ app, onDelete }) {
               </span>
             )}
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Created {createdDate}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Created {createdDate}
+            {" · "}
+            {app.active_consent_count ?? 0} active {app.active_consent_count === 1 ? "consent" : "consents"}
+          </p>
         </div>
         <button
           type="button"
@@ -381,7 +434,63 @@ function AppCard({ app, onDelete }) {
             </ul>
           )}
         </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={openEdit}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-xs font-medium text-secondary transition hover:bg-muted/60"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            Edit redirect URIs
+          </button>
+          <button
+            type="button"
+            onClick={handleRotate}
+            disabled={rotating}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/30 px-3 py-1.5 text-xs font-medium text-secondary transition hover:bg-muted/60 disabled:opacity-50"
+          >
+            {rotating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Key className="h-3.5 w-3.5" />}
+            Rotate secret
+          </button>
+        </div>
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit redirect URIs</DialogTitle>
+            <DialogDescription>
+              One URI per line. Connect sessions can only use a URI on this list.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSaveUris} className="mt-4 space-y-4">
+            <textarea
+              value={uriDraft}
+              onChange={(e) => setUriDraft(e.target.value)}
+              rows={4}
+              className="w-full resize-none rounded-lg border border-border bg-muted/30 px-3 py-2.5 font-mono text-sm text-secondary focus:outline-none focus:ring-2 focus:ring-tertiary"
+            />
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setEditOpen(false)}
+                className="flex-1 rounded-lg border border-border bg-muted/30 px-4 py-2.5 text-sm font-medium text-muted-foreground transition hover:bg-muted/60"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingUris}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-tertiary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-tertiary/90 disabled:opacity-50"
+              >
+                {savingUris && <Loader2 className="h-4 w-4 animate-spin" />}
+                Save
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -641,13 +750,36 @@ function ApiReferenceCard() {
           </p>
 
           <div className="space-y-2">
-            <p className="font-medium text-secondary">OAuth flow (Authorization Code)</p>
-            <ol className="list-inside list-decimal space-y-1.5 text-xs">
-              <li>Redirect the user to <code className="bg-muted rounded px-1 font-mono">GET {window.location.origin}/oauth/authorize?response_type=code&client_id=…&redirect_uri=…&scope=…</code></li>
-              <li>User approves → Setl redirects to your <code className="bg-muted rounded px-1 font-mono">redirect_uri?code=…</code></li>
-              <li>Exchange the code server-side: <code className="bg-muted rounded px-1 font-mono">POST {API_BASE_FOR_DOCS}/oauth/token</code></li>
-              <li>Use the <code className="bg-muted rounded px-1 font-mono">access_token</code> as a Bearer token on external API calls</li>
-            </ol>
+            <p className="font-medium text-secondary">Connect flow</p>
+            <p className="text-xs">
+              Create the session on your server. The client secret never goes in the browser. Send the customer to the <code className="rounded bg-muted px-1 font-mono">connect_url</code> from the response.
+            </p>
+            <pre className="overflow-x-auto rounded-lg border border-border bg-[#0d1117] p-3 text-xs text-green-400">
+{`const session = await fetch("${API_BASE_FOR_DOCS}/oauth/connect/sessions", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    client_id: process.env.SETL_CLIENT_ID,
+    client_secret: process.env.SETL_CLIENT_SECRET,
+    redirect_uri: "https://yourapp.com/callback",
+    scope: "accounts:read transactions:read",
+  }),
+});
+const { connect_url } = (await session.json()).data;
+
+// After the customer approves, your redirect receives ?code=
+await fetch("${API_BASE_FOR_DOCS}/oauth/token", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: "https://yourapp.com/callback",
+    client_id: process.env.SETL_CLIENT_ID,
+    client_secret: process.env.SETL_CLIENT_SECRET,
+  }),
+});`}
+            </pre>
           </div>
 
           <div className="space-y-1.5">
@@ -664,7 +796,6 @@ function ApiReferenceCard() {
                   ["transactions:read", "GET /transactions, GET /transactions/:id"],
                   ["accounts:read",     "GET /accounts"],
                   ["profile:read",      "GET /profile"],
-                  ["dashboard:read",    "GET /dashboard"],
                 ].map(([scope, endpoint]) => (
                   <tr key={scope}>
                     <td className="py-1.5 pr-4 font-mono text-tertiary">{scope}</td>
@@ -745,6 +876,7 @@ export function DeveloperPortalPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [credentials, setCredentials] = useState(null);
   const [credentialsOpen, setCredentialsOpen] = useState(false);
+  const [credentialTitle, setCredentialTitle] = useState("App created");
 
   // Pull the freshest profile in case the cached user predates the isDeveloper field
   useEffect(() => {
@@ -769,12 +901,23 @@ export function DeveloperPortalPage() {
 
   function handleCreated(data) {
     setCredentials(data);
+    setCredentialTitle("App created");
     setCredentialsOpen(true);
     fetchApps();
   }
 
   function handleDeleted(clientId) {
     setApps((prev) => prev.filter((a) => a.client_id !== clientId));
+  }
+
+  function handleUpdated(updated) {
+    setApps((prev) => prev.map((app) => (app.client_id === updated.client_id ? { ...app, ...updated } : app)));
+  }
+
+  function handleSecretRotated(data) {
+    setCredentials(data);
+    setCredentialTitle("Client secret rotated");
+    setCredentialsOpen(true);
   }
 
   const userEmail = user?.email ?? "";
@@ -890,7 +1033,13 @@ export function DeveloperPortalPage() {
                     className="grid gap-4 sm:grid-cols-2"
                   >
                     {apps.map((app) => (
-                      <AppCard key={app.client_id} app={app} onDelete={handleDeleted} />
+                      <AppCard
+                        key={app.client_id}
+                        app={app}
+                        onDelete={handleDeleted}
+                        onUpdated={handleUpdated}
+                        onSecretRotated={handleSecretRotated}
+                      />
                     ))}
                     {/* Add another app card */}
                     <button
@@ -916,10 +1065,10 @@ export function DeveloperPortalPage() {
                   <ol className="space-y-3 text-sm text-muted-foreground">
                     {[
                       ["Register your app", "Create an OAuth client to get a client_id and client_secret."],
-                      ["Redirect users", "Send users to Setl's authorization URL with your client_id and desired scopes."],
-                      ["User approves", "Setl shows a consent screen. When approved, we redirect back with a code."],
-                      ["Exchange the code", "POST the code to /oauth/token server-side to receive an access_token."],
-                      ["Access the API", "Use the Bearer token to call the external API on behalf of the user."],
+                      ["Create a connect session", "From your server, POST /oauth/connect/sessions with the secret, redirect URI, and scopes."],
+                      ["Customer approves", "Open the connect URL. The customer signs in, picks accounts, and approves for 90 days."],
+                      ["Exchange the code", "Setl redirects back with a one-time code. POST it to /oauth/token from your server."],
+                      ["Read the consent", "Call the external API with the access token. Responses include only the accounts they selected."],
                     ].map(([title, desc], i) => (
                       <li key={i} className="flex gap-3">
                         <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-tertiary/10 text-xs font-bold text-tertiary">
@@ -940,8 +1089,16 @@ export function DeveloperPortalPage() {
                   <h2 className="mb-3 font-semibold text-secondary">Token lifetimes</h2>
                   <dl className="space-y-1.5 text-muted-foreground">
                     <div className="flex justify-between">
+                      <dt>Connect session</dt>
+                      <dd className="font-medium text-secondary">30 minutes</dd>
+                    </div>
+                    <div className="flex justify-between">
                       <dt>Auth code</dt>
                       <dd className="font-medium text-secondary">10 minutes</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt>Consent</dt>
+                      <dd className="font-medium text-secondary">90 days</dd>
                     </div>
                     <div className="flex justify-between">
                       <dt>Access token</dt>
@@ -977,6 +1134,7 @@ export function DeveloperPortalPage() {
       <CredentialsModal
         open={credentialsOpen}
         onOpenChange={setCredentialsOpen}
+        title={credentialTitle}
         credentials={credentials}
       />
     </div>

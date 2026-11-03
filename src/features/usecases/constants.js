@@ -43,30 +43,6 @@ export const USE_CASES = [
     ],
   },
   {
-    slug: "fraud",
-    iconKey: "ShieldCheck",
-    title: "Fraud & risk",
-    summary:
-      "Give a risk product real account activity from the connection, so anomalies sit on genuine transactions.",
-    points: [
-      "Surface unusual flows and duplicate entries",
-      "Cross-check declared income against connected activity",
-      "Build risk models on structured account data",
-    ],
-  },
-  {
-    slug: "identity",
-    iconKey: "BadgeCheck",
-    title: "Identity & account verification",
-    summary:
-      "Use the connected account to confirm who holds it and that it is in use during onboarding.",
-    points: [
-      "Read the account holder and account details the connection returns",
-      "See that the account is active and in use",
-      "Catch mismatched accounts before money moves",
-    ],
-  },
-  {
     slug: "wealth",
     iconKey: "TrendingUp",
     title: "Wealth & investing",

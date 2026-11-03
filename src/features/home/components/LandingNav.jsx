@@ -1,238 +1,304 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { BUTTON_SECONDARY_CLASS, BUTTON_TERTIARY_CLASS } from "@/lib/styles";
-// Import directly from the constants module (not the feature barrel) to avoid a
-// circular dependency: the barrel also exports UseCasesPage, which imports this nav.
+import { useAuthStore } from "@/stores/authStore";
 import { USE_CASES } from "@/features/usecases/constants";
 
+const PRODUCTS = [
+  {
+    href: "/products#connect",
+    title: "Connect",
+    summary: "A consent screen. The customer signs in on Setl and approves what your app can read.",
+  },
+  {
+    href: "/products#accounts",
+    title: "Accounts",
+    summary: "The accounts they select, in one list.",
+  },
+  {
+    href: "/products#transactions",
+    title: "Transactions",
+    summary: "A normalized feed your product can read.",
+  },
+];
+
+const DEVELOPER_LINKS = [
+  { href: "/developers", title: "Documentation", summary: "How a Setl connection works." },
+  { href: "/developers#quickstart", title: "Quickstart", summary: "From an app to a first API call." },
+  { href: "/developers#reference", title: "API reference", summary: "Connect, tokens, accounts, transactions." },
+];
+
 /**
- * LandingNav - Fixed header with page-level links, a Use cases mega-menu, and
- * mobile menu. Section links use absolute hashes (/#features) so they resolve
- * from any page via the ScrollToHash helper, mirroring Plaid's nav model where
- * every item is a destination rather than a same-page anchor.
- *
- * @param {Object} props
- * @param {boolean} props.mobileMenuOpen
- * @param {(value: boolean) => void} props.onMobileMenuChange
+ * LandingNav - Marketing header. Products, use cases, and developers open as menus.
  */
 export function LandingNav({ mobileMenuOpen, onMobileMenuChange }) {
-  const [useCasesOpen, setUseCasesOpen] = useState(false);
-  const [mobileUseCasesOpen, setMobileUseCasesOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [openMenu, setOpenMenu] = useState(null);
+  const [mobileGroup, setMobileGroup] = useState(null);
 
-  const closeMenu = () => {
+  const keysHref = isAuthenticated ? "/developer" : "/auth";
+  const keysLabel = isAuthenticated ? "Dashboard" : "Get API keys";
+
+  useEffect(() => {
+    if (!openMenu) return undefined;
+    const onKey = (event) => {
+      if (event.key === "Escape") setOpenMenu(null);
+    };
+    const onPointer = (event) => {
+      if (!event.target.closest("[data-nav-menu]")) setOpenMenu(null);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer);
+    };
+  }, [openMenu]);
+
+  const closeAll = () => {
     onMobileMenuChange(false);
-    setMobileUseCasesOpen(false);
+    setOpenMenu(null);
+    setMobileGroup(null);
   };
 
   return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border/80 bg-primary/98 backdrop-blur-xl shadow-sm safe-area-pad"
-    >
-      <div className="mx-auto flex h-14 min-h-[48px] max-w-7xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6 lg:px-8">
-        {/* Left cluster: logo + primary nav grouped together */}
-        <div className="flex items-center gap-6 lg:gap-10">
-          <Link
-            to="/"
-            className="relative z-10 flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-2"
-            onClick={closeMenu}
-          >
-            <img src="/logo.png" alt="Setl" className="h-8 w-auto sm:h-9" />
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-[#eceae4] bg-white/90 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center" onClick={closeAll}>
+            <img src="/logo.svg" alt="Setl" className="h-8 w-auto" />
           </Link>
 
-          <nav className="hidden items-center gap-6 lg:gap-8 md:flex">
-          <Link
-            to="/#features"
-            className="nav-link inline-flex min-h-[44px] items-center"
-          >
-            Product
-          </Link>
-
-          {/* Use cases mega-menu */}
-          <div
-            className="relative"
-            onMouseEnter={() => setUseCasesOpen(true)}
-            onMouseLeave={() => setUseCasesOpen(false)}
-          >
-            <button
-              type="button"
-              className="nav-link inline-flex min-h-[44px] items-center gap-1"
-              aria-expanded={useCasesOpen}
-              aria-haspopup="true"
-              onClick={() => setUseCasesOpen((v) => !v)}
-              onFocus={() => setUseCasesOpen(true)}
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+            <MenuButton
+              label="Products"
+              open={openMenu === "products"}
+              active={pathname.startsWith("/products")}
+              onToggle={() => setOpenMenu((m) => (m === "products" ? null : "products"))}
             >
-              Use cases
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 transition-transform",
-                  useCasesOpen && "rotate-180"
-                )}
-              />
-            </button>
-
-            <AnimatePresence>
-              {useCasesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute left-1/2 top-full z-50 w-[36rem] -translate-x-1/2 pt-3"
+              <MenuPanel>
+                {PRODUCTS.map((item) => (
+                  <MenuLink key={item.href} {...item} onClick={() => setOpenMenu(null)} />
+                ))}
+                <Link
+                  to="/products"
+                  onClick={() => setOpenMenu(null)}
+                  className="mt-1 block rounded-lg px-3 py-2 text-sm font-medium text-[#141414] hover:bg-[#f6f5f2]"
                 >
-                  <div className="overflow-hidden rounded-2xl border border-border/80 bg-primary p-2 shadow-xl">
-                    <div className="grid grid-cols-2 gap-1">
-                      {USE_CASES.map(({ slug, title, summary }) => (
-                        <Link
-                          key={slug}
-                          to={`/use-cases#${slug}`}
-                          className="group rounded-xl px-3 py-2.5 transition hover:bg-muted/60"
-                        >
-                          <span className="block text-sm font-semibold text-secondary group-hover:text-tertiary">
-                            {title}
-                          </span>
-                          <span className="mt-0.5 line-clamp-2 block text-xs leading-snug text-muted-foreground">
-                            {summary}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                    <Link
-                      to="/use-cases"
-                      className="mt-1 flex items-center justify-center gap-1 rounded-xl border-t border-border/60 px-3 py-2.5 text-sm font-semibold text-tertiary transition hover:bg-tertiary/5"
-                    >
-                      View all use cases
-                      <ChevronDown className="h-4 w-4 -rotate-90" />
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                  All products
+                </Link>
+              </MenuPanel>
+            </MenuButton>
 
-          <Link
-            to="/#pricing"
-            className="nav-link inline-flex min-h-[44px] items-center"
-          >
-            Pricing
-          </Link>
+            <MenuButton
+              label="Use cases"
+              open={openMenu === "cases"}
+              active={pathname.startsWith("/use-cases")}
+              onToggle={() => setOpenMenu((m) => (m === "cases" ? null : "cases"))}
+              wide
+            >
+              <MenuPanel wide>
+                <div className="grid grid-cols-2 gap-1">
+                  {USE_CASES.map(({ slug, title, summary }) => (
+                    <MenuLink
+                      key={slug}
+                      href={`/use-cases#${slug}`}
+                      title={title}
+                      summary={summary}
+                      onClick={() => setOpenMenu(null)}
+                    />
+                  ))}
+                </div>
+                <Link
+                  to="/use-cases"
+                  onClick={() => setOpenMenu(null)}
+                  className="mt-1 block rounded-lg px-3 py-2 text-sm font-medium text-[#141414] hover:bg-[#f6f5f2]"
+                >
+                  All use cases
+                </Link>
+              </MenuPanel>
+            </MenuButton>
+
+            <MenuButton
+              label="Developers"
+              open={openMenu === "devs"}
+              active={pathname.startsWith("/developers")}
+              onToggle={() => setOpenMenu((m) => (m === "devs" ? null : "devs"))}
+            >
+              <MenuPanel>
+                {DEVELOPER_LINKS.map((item) => (
+                  <MenuLink key={item.href} {...item} onClick={() => setOpenMenu(null)} />
+                ))}
+              </MenuPanel>
+            </MenuButton>
+
+            <Link
+              to="/pricing"
+              className={cn(
+                "rounded-lg px-3 py-2 text-sm text-[#3f3f3f] hover:text-[#141414]",
+                pathname.startsWith("/pricing") && "font-medium text-[#141414]"
+              )}
+            >
+              Pricing
+            </Link>
+            <Link
+              to="/about"
+              className={cn(
+                "rounded-lg px-3 py-2 text-sm text-[#3f3f3f] hover:text-[#141414]",
+                pathname.startsWith("/about") && "font-medium text-[#141414]"
+              )}
+            >
+              About
+            </Link>
           </nav>
         </div>
 
-        <div className="relative z-10 flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
+          {!isAuthenticated && (
+            <Link
+              to="/auth"
+              className="hidden h-10 items-center rounded-full px-4 text-sm font-medium text-[#141414] hover:bg-[#f6f5f2] sm:inline-flex"
+            >
+              Log in
+            </Link>
+          )}
           <Link
-            to="/auth"
-            className="hidden h-9 items-center rounded-lg border border-border px-4 text-sm font-medium text-secondary transition hover:border-secondary/60 hover:bg-muted sm:inline-flex"
+            to={keysHref}
+            className="hidden h-10 items-center rounded-full bg-[#141414] px-4 text-sm font-medium text-white hover:bg-[#2a2a2a] sm:inline-flex"
           >
-            Sign In
-          </Link>
-          <Link
-            to="/auth"
-            className="hidden h-9 items-center rounded-lg bg-tertiary px-4 text-sm font-semibold text-tertiary-foreground shadow-sm transition hover:bg-tertiary/90 sm:inline-flex"
-          >
-            Get API keys
+            {keysLabel}
           </Link>
           <button
             type="button"
-            onClick={() => onMobileMenuChange(!mobileMenuOpen)}
-            className="flex h-10 w-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-secondary md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[#141414] hover:bg-[#f6f5f2] lg:hidden"
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => onMobileMenuChange(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
 
       {mobileMenuOpen && (
-        <div className="absolute inset-x-0 top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto border-t border-border/80 bg-primary shadow-lg md:hidden">
-          <nav className="flex flex-col gap-1 p-4">
-            <Link
-              to="/#features"
-              className="nav-link flex min-h-[48px] items-center rounded-lg px-4 hover:bg-muted/50"
-              onClick={closeMenu}
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#eceae4] bg-white lg:hidden">
+          <nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
+            <MobileGroup
+              label="Products"
+              open={mobileGroup === "products"}
+              onToggle={() => setMobileGroup((g) => (g === "products" ? null : "products"))}
             >
-              Product
-            </Link>
-
-            {/* Use cases — expandable group */}
-            <button
-              type="button"
-              onClick={() => setMobileUseCasesOpen((v) => !v)}
-              className="nav-link flex min-h-[48px] items-center justify-between rounded-lg px-4 hover:bg-muted/50"
-              aria-expanded={mobileUseCasesOpen}
-            >
-              Use cases
-              <ChevronDown
-                className={cn(
-                  "h-4 w-4 transition-transform",
-                  mobileUseCasesOpen && "rotate-180"
-                )}
-              />
-            </button>
-            {mobileUseCasesOpen && (
-              <div className="ml-2 flex flex-col gap-0.5 border-l border-border/60 pl-2">
-                {USE_CASES.map(({ slug, title }) => (
-                  <Link
-                    key={slug}
-                    to={`/use-cases#${slug}`}
-                    className="flex min-h-[44px] items-center rounded-lg px-4 text-sm text-secondary hover:bg-muted/50"
-                    onClick={closeMenu}
-                  >
-                    {title}
-                  </Link>
-                ))}
-                <Link
-                  to="/use-cases"
-                  className="flex min-h-[44px] items-center rounded-lg px-4 text-sm font-semibold text-tertiary hover:bg-tertiary/5"
-                  onClick={closeMenu}
-                >
-                  View all use cases
+              {PRODUCTS.map((item) => (
+                <Link key={item.href} to={item.href} onClick={closeAll} className="block rounded-lg px-3 py-2.5 text-sm text-[#141414]">
+                  {item.title}
                 </Link>
-              </div>
-            )}
-
-            <Link
-              to="/#pricing"
-              className="nav-link flex min-h-[48px] items-center rounded-lg px-4 hover:bg-muted/50"
-              onClick={closeMenu}
+              ))}
+              <Link to="/products" onClick={closeAll} className="block rounded-lg px-3 py-2.5 text-sm font-medium">
+                All products
+              </Link>
+            </MobileGroup>
+            <MobileGroup
+              label="Use cases"
+              open={mobileGroup === "cases"}
+              onToggle={() => setMobileGroup((g) => (g === "cases" ? null : "cases"))}
             >
+              {USE_CASES.map(({ slug, title }) => (
+                <Link key={slug} to={`/use-cases#${slug}`} onClick={closeAll} className="block rounded-lg px-3 py-2.5 text-sm">
+                  {title}
+                </Link>
+              ))}
+            </MobileGroup>
+            <MobileGroup
+              label="Developers"
+              open={mobileGroup === "devs"}
+              onToggle={() => setMobileGroup((g) => (g === "devs" ? null : "devs"))}
+            >
+              {DEVELOPER_LINKS.map((item) => (
+                <Link key={item.href} to={item.href} onClick={closeAll} className="block rounded-lg px-3 py-2.5 text-sm">
+                  {item.title}
+                </Link>
+              ))}
+            </MobileGroup>
+            <Link to="/pricing" onClick={closeAll} className="rounded-lg px-3 py-3 text-sm">
               Pricing
             </Link>
-
-            <div className="mt-2 flex flex-col gap-2 border-t border-border/60 pt-2">
-              <Link
-                to="/auth"
-                className={cn(
-                  BUTTON_SECONDARY_CLASS,
-                  "min-h-[48px] w-full justify-center"
-                )}
-                onClick={closeMenu}
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/auth"
-                className={cn(
-                  BUTTON_TERTIARY_CLASS,
-                  "min-h-[48px] w-full justify-center"
-                )}
-                onClick={closeMenu}
-              >
-                Get API keys
+            <Link to="/about" onClick={closeAll} className="rounded-lg px-3 py-3 text-sm">
+              About
+            </Link>
+            <div className="mt-2 flex flex-col gap-2 border-t border-[#eceae4] pt-3">
+              {!isAuthenticated && (
+                <Link to="/auth" onClick={closeAll} className="flex h-11 items-center justify-center rounded-full border border-[#141414] text-sm font-medium">
+                  Log in
+                </Link>
+              )}
+              <Link to={keysHref} onClick={closeAll} className="flex h-11 items-center justify-center rounded-full bg-[#141414] text-sm font-medium text-white">
+                {keysLabel}
               </Link>
             </div>
           </nav>
         </div>
       )}
-    </motion.header>
+    </header>
+  );
+}
+
+function MenuButton({ label, open, active, onToggle, wide, children }) {
+  return (
+    <div className="relative" data-nav-menu>
+      <button
+        type="button"
+        className={cn(
+          "inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-[#3f3f3f] hover:text-[#141414]",
+          (open || active) && "font-medium text-[#141414]"
+        )}
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={onToggle}
+      >
+        {label}
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className={cn("absolute left-0 top-full z-50 pt-2", wide ? "w-[34rem]" : "w-80")}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuPanel({ wide, children }) {
+  return (
+    <div className={cn("rounded-2xl border border-[#eceae4] bg-white p-2 shadow-[0_16px_40px_-24px_rgba(0,0,0,0.35)]", wide && "w-[34rem]")}>
+      {children}
+    </div>
+  );
+}
+
+function MenuLink({ href, title, summary, onClick }) {
+  return (
+    <Link to={href} onClick={onClick} className="block rounded-xl px-3 py-2.5 hover:bg-[#f6f5f2]">
+      <span className="block text-sm font-medium text-[#141414]">{title}</span>
+      <span className="mt-0.5 block text-xs leading-snug text-[#6b6b66]">{summary}</span>
+    </Link>
+  );
+}
+
+function MobileGroup({ label, open, onToggle, children }) {
+  return (
+    <div>
+      <button
+        type="button"
+        className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm"
+        aria-expanded={open}
+        onClick={onToggle}
+      >
+        {label}
+        <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && <div className="pb-1 pl-3">{children}</div>}
+    </div>
   );
 }

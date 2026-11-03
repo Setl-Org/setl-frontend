@@ -1,9 +1,6 @@
 /**
- * BankLogo - Renders a supported bank/wallet logo as a uniform "logo card".
- *
- * Prefers a real image when `bank.src` is set (drop files in public/banks/),
- * otherwise falls back to a brand-colored wordmark placeholder. Both render
- * inside the same neutral card so the row reads as a clean logo wall.
+ * BankLogo - Brand-colored wordmark for a bank name.
+ * Real bank logos stay off the site until a bank is connected.
  *
  * @param {Object} props
  * @param {{ name: string, short?: string, color: string, src?: string|null }} props.bank

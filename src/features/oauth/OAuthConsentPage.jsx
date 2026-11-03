@@ -1,40 +1,42 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ShieldCheck, ArrowLeft, Loader2, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
-import { Button } from "@/components/ui/Button";
+
+function formatDate(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export function OAuthConsentPage() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const session = searchParams.get("session");
   const user = useAuthStore((state) => state.user);
 
-  const clientId = searchParams.get("client_id");
-  const redirectUri = searchParams.get("redirect_uri");
-  const scope = searchParams.get("scope") ?? "";
-  const state = searchParams.get("state") ?? "";
-  const responseType = searchParams.get("response_type");
-
   const [consentData, setConsentData] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function fetchConsentInfo() {
-      if (!clientId || !redirectUri || responseType !== "code") {
-        setError("Invalid authorization request. Missing or incorrect parameters.");
+      if (!session) {
+        setError("This connection link is missing a session. Start again from the app.");
         setLoading(false);
         return;
       }
       try {
-        const { data } = await api.get("/oauth/authorize", {
-          params: { response_type: responseType, client_id: clientId, redirect_uri: redirectUri, scope, state },
-        });
+        const { data } = await api.get("/oauth/authorize", { params: { session } });
         setConsentData(data.data);
+        setSelectedIds((data.data.accounts ?? []).map((account) => account.id));
       } catch (err) {
         setError(err?.response?.data?.message ?? "Failed to load authorization request.");
       } finally {
@@ -42,17 +44,25 @@ export function OAuthConsentPage() {
       }
     }
     fetchConsentInfo();
-  }, [clientId, redirectUri, scope, state, responseType]);
+  }, [session]);
+
+  function toggleAccount(id) {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  }
 
   async function handleDecision(approved) {
+    if (approved && selectedIds.length === 0) {
+      toast.error("Select at least one account");
+      return;
+    }
     setSubmitting(true);
     try {
       const { data } = await api.post("/oauth/authorize", {
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        scope,
-        state,
+        session,
         approved,
+        account_ids: approved ? selectedIds : [],
       });
       if (data.redirect_url) {
         window.location.href = data.redirect_url;
@@ -86,6 +96,9 @@ export function OAuthConsentPage() {
     );
   }
 
+  const accounts = consentData.accounts ?? [];
+  const canApprove = accounts.length > 0 && selectedIds.length > 0;
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-primary px-4 py-10">
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -106,14 +119,14 @@ export function OAuthConsentPage() {
           <div>
             <h1 className="text-xl font-semibold text-secondary">Authorize Access</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-secondary">{consentData.client_name}</span> is requesting access to your Setl account
+              <span className="font-medium text-secondary">{consentData.client_name}</span> is requesting access to accounts you choose
             </p>
           </div>
         </div>
 
-        {user && (
+        {user?.email && (
           <div className="mb-5 flex items-center gap-2 rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-sm">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400" />
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
             <span className="text-muted-foreground">
               Signed in as <span className="font-medium text-secondary">{user.email}</span>
             </span>
@@ -121,7 +134,7 @@ export function OAuthConsentPage() {
         )}
 
         <div className="mb-6">
-          <p className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-widest">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-muted-foreground">
             Permissions requested
           </p>
           <ul className="space-y-2">
@@ -130,16 +143,58 @@ export function OAuthConsentPage() {
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-tertiary" />
                 <div>
                   <p className="text-sm font-medium text-secondary">{description}</p>
-                  <p className="text-xs text-muted-foreground font-mono mt-0.5">{s}</p>
+                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">{s}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="mb-6 text-xs text-muted-foreground text-center">
-          Authorizing will redirect you to{" "}
-          <span className="font-mono text-secondary break-all">{redirectUri}</span>
+        <div className="mb-6">
+          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-muted-foreground">
+            Accounts to share
+          </p>
+          {accounts.length === 0 ? (
+            <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+              <p>Add an account in your Setl dashboard before connecting this app.</p>
+              <Link to="/dashboard" className="mt-2 inline-flex text-sm font-medium text-tertiary hover:underline">
+                Go to dashboard
+              </Link>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {accounts.map((account) => {
+                const checked = selectedIds.includes(account.id);
+                return (
+                  <li key={account.id}>
+                    <label
+                      className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition ${
+                        checked ? "border-tertiary/50 bg-tertiary/5" : "border-border/60 bg-muted/20"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleAccount(account.id)}
+                        className="mt-1 accent-tertiary"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-secondary">{account.accountName}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {[account.bankName, account.accountType, account.mask].filter(Boolean).join(" · ")}
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <p className="mb-6 text-center text-xs text-muted-foreground">
+          Access lasts {consentData.consent_days} days, until {formatDate(consentData.consent_expires_at)}. You can revoke it anytime from your Setl dashboard. Approving sends you to{" "}
+          <span className="break-all font-mono text-secondary">{consentData.redirect_uri}</span>
         </p>
 
         <div className="flex gap-3">
@@ -154,15 +209,11 @@ export function OAuthConsentPage() {
           </button>
           <button
             type="button"
-            disabled={submitting}
+            disabled={submitting || !canApprove}
             onClick={() => handleDecision(true)}
             className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-tertiary px-4 py-3 text-sm font-medium text-white transition hover:bg-tertiary/90 disabled:opacity-50"
           >
-            {submitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ShieldCheck className="h-4 w-4" />
-            )}
+            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
             Authorize
           </button>
         </div>

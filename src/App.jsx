@@ -5,6 +5,10 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/layout";
 import { HomePage } from "@/features/home";
 import { UseCasesPage } from "@/features/usecases";
+import { ProductsPage } from "@/features/products";
+import { DevelopersPage } from "@/features/developers";
+import { PricingPage } from "@/features/pricing";
+import { AboutPage } from "@/features/about";
 import { AuthPage } from "@/features/auth";
 import { DashboardPage } from "@/features/dashboard";
 import { NotFoundPage } from "@/features/not-found";
@@ -18,7 +22,11 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
           <Route path="/use-cases" element={<UseCasesPage />} />
+          <Route path="/developers" element={<DevelopersPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route
             path="/dashboard"
