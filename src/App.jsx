@@ -18,6 +18,7 @@ import { TransactionsPage } from "@/features/dashboard/pages/TransactionsPage";
 import { InsightsPage } from "@/features/dashboard/pages/InsightsPage";
 import { ConnectedAppsPage } from "@/features/dashboard/pages/ConnectedAppsPage";
 import { SettingsPage } from "@/features/dashboard/pages/SettingsPage";
+import { LinkCustomizePage } from "@/features/link-customize";
 import { DeveloperGate } from "@/features/developer/DeveloperGate";
 import { KeysPage } from "@/features/developer/pages/KeysPage";
 import { AppsPage } from "@/features/developer/pages/AppsPage";
@@ -54,6 +55,7 @@ function App() {
             <Route path="/dashboard/insights" element={<InsightsPage />} />
             <Route path="/dashboard/connected-apps" element={<ConnectedAppsPage />} />
             <Route path="/dashboard/settings" element={<SettingsPage />} />
+            <Route path="/dashboard/customize/link" element={<LinkCustomizePage />} />
             <Route path="/developer" element={<DeveloperGate />}>
               <Route index element={<KeysPage />} />
               <Route path="apps" element={<AppsPage />} />

@@ -12,6 +12,8 @@ import {
   AppWindow,
   BookOpen,
   FileText,
+  PenLine,
+  Link2,
 } from "lucide-react";
 
 /**
@@ -44,6 +46,12 @@ export const NAV_MAIN = [
       { id: "api", label: "API reference", icon: FileText, to: "/developer/api" },
       { id: "docs", label: "Docs", icon: BookOpen, href: "/developers", external: true },
     ],
+  },
+  {
+    id: "customize",
+    label: "Customize",
+    icon: PenLine,
+    children: [{ id: "link", label: "Link", icon: Link2, to: "/dashboard/customize/link" }],
   },
   { id: "connected-apps", label: "Connected apps", icon: ShieldCheck, to: "/dashboard/connected-apps" },
 ];
