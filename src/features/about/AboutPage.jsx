@@ -1,4 +1,4 @@
-import { Linkedin, Mail, ArrowUpRight } from "lucide-react";
+import { Linkedin, ArrowUpRight } from "lucide-react";
 import { MarketingShell } from "@/features/home/components/MarketingShell";
 import { PageHero } from "@/features/home/components/PageHero";
 import { DualActions } from "@/features/home/components/DualActions";
@@ -101,7 +101,6 @@ export function AboutPage() {
                 Setl on LinkedIn
               </a>
             </div>
-          </div>
           <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {TEAM.map((person) => (
               <li key={person.name} className="group rounded-[24px] bg-[#faf8fd] p-5 ring-1 ring-[#eee8f6] transition-shadow hover:shadow-[0_20px_40px_-28px_rgba(29,11,48,0.5)]">
