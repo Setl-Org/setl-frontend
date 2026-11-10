@@ -115,7 +115,7 @@ function ContactBlock() {
         <div>
           <h2 className="text-3xl font-semibold tracking-tight">Talk to us</h2>
           <p className="mt-3 max-w-md text-base leading-relaxed text-[#3f3f3f]">
-            Tell us what you are building and which institutions your users hold. Or write directly to hatif@joinsetl.com.
+            Tell us what you are building and which institutions your users hold. Or write directly to info@joinsetl.com.
           </p>
         </div>
         <form noValidate onSubmit={onSubmit} className="space-y-4">

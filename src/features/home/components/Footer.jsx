@@ -15,8 +15,8 @@ export function Footer() {
             The connector between Pakistani bank accounts and the fintechs built on them.
           </p>
           <div className="mt-4 flex flex-col items-start gap-2">
-          <a href="mailto:hatif@joinsetl.com" className="text-sm font-medium text-[#141414] underline-offset-4 hover:underline">
-            hatif@joinsetl.com
+          <a href="mailto:info@joinsetl.com" className="text-sm font-medium text-[#141414] underline-offset-4 hover:underline">
+            info@joinsetl.com
           </a>
           <a
             href="https://www.linkedin.com/company/setl-finance"

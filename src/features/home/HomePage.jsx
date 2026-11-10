@@ -315,7 +315,7 @@ export function HomePage() {
               Get API keys
             </Link>
             <a
-              href="mailto:hatif@joinsetl.com"
+              href="mailto:info@joinsetl.com"
               className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 px-6 text-sm font-medium text-white hover:bg-white/10"
             >
               Talk to us
