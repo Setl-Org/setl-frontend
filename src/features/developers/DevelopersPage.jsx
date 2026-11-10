@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import { MarketingShell } from "@/features/home/components/MarketingShell";
 import { CodeSample } from "@/features/home/components/CodeSample";
+import { PageHero } from "@/features/home/components/PageHero";
+import { pillClass } from "@/features/home/brand";
+import { useAuthStore } from "@/stores/authStore";
 
 const NAV = [
   { href: "#quickstart", label: "Quickstart" },
@@ -83,6 +86,8 @@ Authorization: Bearer ACCESS_TOKEN
  * DevelopersPage - Public documentation for the connect flow and external API.
  */
 export function DevelopersPage() {
+  const isAuthenticated = useAuthStore((st) => st.isAuthenticated);
+  const keysHref = isAuthenticated ? "/developer" : "/auth";
   return (
     <MarketingShell>
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:pt-32">
@@ -102,21 +107,9 @@ export function DevelopersPage() {
         </aside>
 
         <article className="min-w-0 max-w-3xl">
-          <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Build on Setl</h1>
-          <p className="mt-4 text-lg leading-relaxed text-[#3f3f3f]">
-            Register an app, send your user through Connect, then read the accounts they approved.
-          </p>
-          <p className="mt-4 rounded-2xl bg-[#F3EEF9] px-4 py-3 text-sm leading-relaxed text-[#3f3f3f]">
+          <p className="rounded-2xl bg-[#F3EEF9] px-4 py-3 text-sm leading-relaxed text-[#3f3f3f]">
             The connect flow, OAuth, and the endpoints below are in the product today. In this build, account and transaction data comes from statements a user provides. Direct bank APIs open as each institution joins.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/auth" className="inline-flex h-11 items-center rounded-full bg-[#141414] px-5 text-sm font-medium text-white hover:bg-[#2a2a2a]">
-              Get API keys
-            </Link>
-            <Link to="/products" className="inline-flex h-11 items-center rounded-full border border-[#141414] px-5 text-sm font-medium hover:bg-[#f6f5f2]">
-              See the products
-            </Link>
-          </div>
 
           <section id="quickstart" className="scroll-mt-24 pt-16">
             <h2 className="text-2xl font-semibold tracking-tight">Quickstart</h2>
