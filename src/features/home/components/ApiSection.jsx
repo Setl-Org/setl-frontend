@@ -40,7 +40,7 @@ export function ApiSection() {
             style={{ lineHeight: 1.6 }}
           >
             You build the experience. Setl returns accounts, balances, and
-            transactions from the banks your users connect — behind one REST
+            transactions from the banks your users connect, behind one REST
             API.
           </p>
 

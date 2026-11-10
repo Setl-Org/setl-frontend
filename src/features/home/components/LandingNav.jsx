@@ -271,7 +271,7 @@ function MenuButton({ label, open, active, onToggle, wide, children }) {
 
 function MenuPanel({ wide, children }) {
   return (
-    <div className={cn("rounded-2xl border border-[#eceae4] bg-white p-2 shadow-[0_16px_40px_-24px_rgba(0,0,0,0.35)]", wide && "w-[34rem]")}>
+    <div className={cn("rounded-2xl border border-[#eceae4] bg-white p-2 shadow-[0_16px_40px_-24px_rgba(20,20,20,0.35)]", wide && "w-[34rem]")}>
       {children}
     </div>
   );

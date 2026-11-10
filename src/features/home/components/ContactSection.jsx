@@ -42,7 +42,7 @@ export function ContactSection() {
         body: JSON.stringify(form),
       });
       if (!res.ok) throw new Error("Request failed");
-      toast.success("Thanks — we'll be in touch shortly.");
+      toast.success("Thanks. We'll be in touch shortly.");
       setForm(EMPTY);
       setErrors({});
     } catch {

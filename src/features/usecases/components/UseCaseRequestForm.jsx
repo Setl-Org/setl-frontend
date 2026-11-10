@@ -49,7 +49,7 @@ export function UseCaseRequestForm() {
         }),
       });
       if (!res.ok) throw new Error("Request failed");
-      toast.success("Thanks — we'll review your use case and get back to you.");
+      toast.success("Thanks. We'll review your use case and get back to you.");
       setForm(EMPTY);
       setErrors({});
     } catch {

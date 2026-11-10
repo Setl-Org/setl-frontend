@@ -17,7 +17,7 @@ export function CodeSample({ label, code }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-[#141414] text-[#f4f4f1] shadow-[0_24px_60px_-36px_rgba(0,0,0,0.55)]">
+    <div className="overflow-hidden rounded-2xl bg-[#141414] text-[#f4f4f1] shadow-[0_24px_60px_-36px_rgba(20,20,20,0.55)]">
       <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <span className="truncate font-mono text-[13px] text-[#d6c7ff]">{label}</span>
         <button

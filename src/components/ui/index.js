@@ -1,4 +1,5 @@
 export { Badge } from "./Badge.jsx";
+export { BankLogo } from "./BankLogo.jsx";
 export { Button } from "./Button.jsx";
 export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "./Dialog.jsx";
 export { DialogFormFooter } from "./DialogFormFooter.jsx";
