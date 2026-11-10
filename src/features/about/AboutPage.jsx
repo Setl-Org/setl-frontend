@@ -50,8 +50,8 @@ export function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
           <h2 className="text-3xl font-semibold tracking-[-0.03em]">The team</h2>
           <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
-              <a href="mailto:hatif@joinsetl.com" className="text-sm font-medium underline-offset-4 hover:underline">
-                hatif@joinsetl.com
+              <a href="mailto:info@joinsetl.com" className="text-sm font-medium underline-offset-4 hover:underline">
+                info@joinsetl.com
               </a>
               <a
                 href={LINKEDIN}

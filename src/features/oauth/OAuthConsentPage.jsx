@@ -1,20 +1,27 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ShieldCheck, ArrowLeft, Loader2, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Check, Lock, ArrowLeftRight, AlertTriangle, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import { cn } from "@/lib/cn";
+import { formatDate } from "@/lib/format";
 import { useAuthStore } from "@/stores/authStore";
+import { AppButton } from "@/components/app/AppButton";
+import { SkeletonBlock } from "@/components/app/SkeletonBlock";
+import { BankLogo } from "@/components/ui/BankLogo";
 
-function formatDate(iso) {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+/** Lilac stage with a centred white sheet: the same frame as the marketing connect sheet. */
+function Stage({ children }) {
+  return (
+    <div className="app-shell flex min-h-screen items-center justify-center bg-[radial-gradient(90%_70%_at_50%_0%,#ece4fa_0%,#f3eef9_45%,#faf8fd_100%)] px-4 py-10">
+      <main className="w-full max-w-[440px] rounded-[24px] border border-hairline bg-canvas shadow-popover motion-safe:animate-[dialog-rise_260ms_cubic-bezier(0.2,0.8,0.2,1)]">
+        {children}
+      </main>
+    </div>
+  );
 }
 
+/** OAuthConsentPage - End-user approval sheet for a third-party app (Setl Connect). */
 export function OAuthConsentPage() {
   const [searchParams] = useSearchParams();
   const session = searchParams.get("session");
@@ -23,13 +30,14 @@ export function OAuthConsentPage() {
   const [consentData, setConsentData] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(null); // "allow" | "deny" | null
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    document.title = "Connect your accounts · Setl";
     async function fetchConsentInfo() {
       if (!session) {
-        setError("This connection link is missing a session. Start again from the app.");
+        setError("This connection link is missing its session. Go back to the app and start again.");
         setLoading(false);
         return;
       }
@@ -38,7 +46,7 @@ export function OAuthConsentPage() {
         setConsentData(data.data);
         setSelectedIds((data.data.accounts ?? []).map((account) => account.id));
       } catch (err) {
-        setError(err?.response?.data?.message ?? "Failed to load authorization request.");
+        setError(err?.response?.data?.message ?? "This connection request couldn't be loaded. It may have expired.");
       } finally {
         setLoading(false);
       }
@@ -47,17 +55,15 @@ export function OAuthConsentPage() {
   }, [session]);
 
   function toggleAccount(id) {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
   }
 
   async function handleDecision(approved) {
     if (approved && selectedIds.length === 0) {
-      toast.error("Select at least one account");
+      toast.error("Choose at least one account to share");
       return;
     }
-    setSubmitting(true);
+    setSubmitting(approved ? "allow" : "deny");
     try {
       const { data } = await api.post("/oauth/authorize", {
         session,
@@ -68,156 +74,166 @@ export function OAuthConsentPage() {
         window.location.href = data.redirect_url;
       }
     } catch (err) {
-      toast.error(err?.response?.data?.message ?? "Something went wrong.");
-      setSubmitting(false);
+      toast.error(err?.response?.data?.message ?? "That didn't go through. Try again.");
+      setSubmitting(null);
     }
   }
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-primary">
-        <Loader2 className="h-8 w-8 animate-spin text-tertiary" />
-      </div>
+      <Stage>
+        <div className="space-y-5 p-7" aria-busy="true">
+          <span role="status" className="sr-only">Loading the connection request</span>
+          <SkeletonBlock className="mx-auto h-12 w-32 rounded-full" />
+          <SkeletonBlock className="mx-auto h-5 w-56" />
+          <SkeletonBlock className="h-24 w-full rounded-xl" />
+          <SkeletonBlock className="h-32 w-full rounded-xl" />
+          <SkeletonBlock className="h-11 w-full rounded-lg" />
+        </div>
+      </Stage>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-primary px-4">
-        <div className="w-full max-w-md rounded-2xl border border-border/80 bg-primary/95 p-8 text-center shadow-lg">
-          <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-400" />
-          <h1 className="mb-2 text-xl font-semibold text-secondary">Authorization Error</h1>
-          <p className="text-muted-foreground">{error}</p>
-          <Link to="/" className="mt-6 inline-flex items-center gap-2 text-sm text-tertiary hover:underline">
-            <ArrowLeft className="h-4 w-4" /> Back to home
-          </Link>
+      <Stage>
+        <div className="p-8 text-center" role="alert">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-negative-soft text-negative">
+            <AlertTriangle className="h-6 w-6" aria-hidden />
+          </span>
+          <h1 className="mt-5 text-[20px] font-semibold tracking-[-0.01em] text-ink">This link can&apos;t be used</h1>
+          <p className="mt-2 text-[14px] leading-relaxed text-ink-muted">{error}</p>
+          <AppButton to="/dashboard" className="mt-6" leadingIcon={ArrowLeft}>
+            Go to your Setl dashboard
+          </AppButton>
         </div>
-      </div>
+      </Stage>
     );
   }
 
   const accounts = consentData.accounts ?? [];
   const canApprove = accounts.length > 0 && selectedIds.length > 0;
+  const appName = consentData.client_name;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-primary px-4 py-10">
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-tertiary/5 blur-[80px]" />
-        <div className="absolute bottom-1/4 -left-20 h-64 w-64 rounded-full bg-tertiary/4 blur-[60px]" />
+    <Stage>
+      <div className="px-7 pb-2 pt-8">
+        <div className="flex items-center justify-center gap-3" aria-hidden>
+          <img src="/logo-mark.svg" alt="" className="h-12 w-12" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sunken text-ink-muted">
+            <ArrowLeftRight className="h-3.5 w-3.5" />
+          </span>
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-[18px] font-semibold text-white">
+            {appName?.[0]?.toUpperCase() ?? "A"}
+          </span>
+        </div>
+        <h1 className="mt-5 text-center text-[21px] font-semibold leading-snug tracking-[-0.015em] text-ink">
+          {appName} wants to read your accounts
+        </h1>
+        {user?.email && (
+          <p className="mt-1.5 text-center text-[13px] text-ink-muted">
+            Signed in as <span className="font-medium text-ink">{user.email}</span>
+          </p>
+        )}
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="relative z-10 w-full max-w-md rounded-2xl border border-border/80 bg-primary/95 p-8 shadow-lg backdrop-blur-sm border-tertiary/20"
-      >
-        <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-tertiary/30 bg-tertiary/10">
-            <ShieldCheck className="h-7 w-7 text-tertiary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-secondary">Authorize Access</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              <span className="font-medium text-secondary">{consentData.client_name}</span> is requesting access to accounts you choose
-            </p>
-          </div>
-        </div>
+      <section aria-labelledby="perm-title" className="px-7 pt-6">
+        <h2 id="perm-title" className="text-[13px] font-medium text-ink-muted">
+          {appName} will be able to
+        </h2>
+        <ul className="mt-2 divide-y divide-hairline rounded-xl border border-hairline">
+          {consentData.scopes.map(({ scope: s, description }) => (
+            <li key={s} className="flex items-start gap-3 px-4 py-3">
+              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lilac text-violet-ink">
+                <Check className="h-3 w-3" strokeWidth={3} aria-hidden />
+              </span>
+              <span>
+                <span className="block text-[14px] font-medium text-ink">{description}</span>
+                <code className="mt-0.5 block font-mono text-[11.5px] text-ink-subtle">{s}</code>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        {user?.email && (
-          <div className="mb-5 flex items-center gap-2 rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-sm">
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-green-500" />
-            <span className="text-muted-foreground">
-              Signed in as <span className="font-medium text-secondary">{user.email}</span>
-            </span>
+      <fieldset className="px-7 pt-6">
+        <legend className="text-[13px] font-medium text-ink-muted">Accounts to share</legend>
+        {accounts.length === 0 ? (
+          <div className="mt-2 rounded-xl border border-dashed border-hairline-strong px-4 py-4 text-[13.5px] text-ink-muted">
+            <p>You don&apos;t have any accounts in Setl yet. Add one, then come back to this link.</p>
+            <Link to="/dashboard/accounts" className="mt-2 inline-block rounded font-medium text-violet-ink hover:underline focus-ring">
+              Add an account
+            </Link>
           </div>
-        )}
-
-        <div className="mb-6">
-          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-muted-foreground">
-            Permissions requested
-          </p>
-          <ul className="space-y-2">
-            {consentData.scopes.map(({ scope: s, description }) => (
-              <li key={s} className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/20 px-4 py-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-tertiary" />
-                <div>
-                  <p className="text-sm font-medium text-secondary">{description}</p>
-                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">{s}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mb-6">
-          <p className="mb-3 text-sm font-medium uppercase tracking-widest text-muted-foreground">
-            Accounts to share
-          </p>
-          {accounts.length === 0 ? (
-            <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
-              <p>Add an account in your Setl dashboard before connecting this app.</p>
-              <Link to="/dashboard" className="mt-2 inline-flex text-sm font-medium text-tertiary hover:underline">
-                Go to dashboard
-              </Link>
-            </div>
-          ) : (
-            <ul className="space-y-2">
-              {accounts.map((account) => {
-                const checked = selectedIds.includes(account.id);
-                return (
-                  <li key={account.id}>
-                    <label
-                      className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 transition ${
-                        checked ? "border-tertiary/50 bg-tertiary/5" : "border-border/60 bg-muted/20"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        onChange={() => toggleAccount(account.id)}
-                        className="mt-1 accent-tertiary"
-                      />
-                      <span>
-                        <span className="block text-sm font-medium text-secondary">{account.accountName}</span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">
-                          {[account.bankName, account.accountType, account.mask].filter(Boolean).join(" · ")}
-                        </span>
+        ) : (
+          <ul className="mt-2 space-y-2">
+            {accounts.map((account) => {
+              const checked = selectedIds.includes(account.id);
+              return (
+                <li key={account.id}>
+                  <label
+                    className={cn(
+                      "flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors",
+                      "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-violet",
+                      checked ? "border-violet/45 bg-lilac" : "border-hairline hover:bg-sunken"
+                    )}
+                  >
+                    <input type="checkbox" checked={checked} onChange={() => toggleAccount(account.id)} className="sr-only" />
+                    <BankLogo bankName={account.bankName} className="h-9 w-9 rounded-lg" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14px] font-medium text-ink">{account.accountName}</span>
+                      <span className="block text-[12.5px] text-ink-muted">
+                        {[account.bankName, account.accountType, account.mask].filter(Boolean).join(" · ")}
                       </span>
-                    </label>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                    </span>
+                    <span
+                      className={cn(
+                        "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors",
+                        checked ? "border-violet bg-violet text-white" : "border-hairline-strong bg-canvas"
+                      )}
+                      aria-hidden
+                    >
+                      {checked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </fieldset>
 
-        <p className="mb-6 text-center text-xs text-muted-foreground">
-          Access lasts {consentData.consent_days} days, until {formatDate(consentData.consent_expires_at)}. You can revoke it anytime from your Setl dashboard. Approving sends you to{" "}
-          <span className="break-all font-mono text-secondary">{consentData.redirect_uri}</span>
+      <div className="px-7 pb-7 pt-6">
+        <p className="flex items-start gap-2 rounded-lg bg-sunken px-3.5 py-3 text-[12.5px] leading-5 text-ink-muted">
+          <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span>
+            Access lasts {consentData.consent_days} days, until {formatDate(consentData.consent_expires_at)}. Revoke it any
+            time from Connected apps in Setl. Afterwards you&apos;ll return to{" "}
+            <span className="break-all font-mono text-ink">{consentData.redirect_uri}</span>.
+          </span>
         </p>
-
-        <div className="flex gap-3">
-          <button
-            type="button"
-            disabled={submitting}
-            onClick={() => handleDecision(false)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border/80 bg-muted/30 px-4 py-3 text-sm font-medium text-muted-foreground transition hover:bg-muted/60 hover:text-secondary disabled:opacity-50"
-          >
-            <XCircle className="h-4 w-4" />
-            Deny
-          </button>
-          <button
-            type="button"
-            disabled={submitting || !canApprove}
+        <div className="mt-5 flex flex-col gap-2">
+          <AppButton
+            variant="primary"
+            className="h-11 w-full"
+            leadingIcon={ShieldCheck}
+            loading={submitting === "allow"}
+            disabled={Boolean(submitting) || !canApprove}
             onClick={() => handleDecision(true)}
-            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-tertiary px-4 py-3 text-sm font-medium text-white transition hover:bg-tertiary/90 disabled:opacity-50"
           >
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-            Authorize
-          </button>
+            Allow {selectedIds.length > 0 ? `${selectedIds.length} ${selectedIds.length === 1 ? "account" : "accounts"}` : ""}
+          </AppButton>
+          <AppButton
+            variant="ghost"
+            className="h-11 w-full"
+            loading={submitting === "deny"}
+            disabled={Boolean(submitting)}
+            onClick={() => handleDecision(false)}
+          >
+            Deny
+          </AppButton>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </Stage>
   );
 }

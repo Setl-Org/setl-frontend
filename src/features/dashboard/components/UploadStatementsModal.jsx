@@ -3,37 +3,31 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/Dialog";
-import { FormField } from "@/components/ui/FormField";
-import { Select } from "@/components/ui/Select";
-import { Input } from "@/components/ui/Input";
-import { DialogFormFooter } from "@/components/ui/DialogFormFooter";
+import { FileUp, FileText, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/Dialog";
+import { Field, TextInput, SelectInput, DialogActions } from "@/components/app/Field";
+import { cn } from "@/lib/cn";
+import { maskAccountNumber } from "@/lib/format";
 import pdfApi from "@/lib/pdfApi";
 import { useAuthStore } from "@/stores/authStore";
 
-const schema = z.object({
-  accountId: z.string().min(1, "Select an account"),
-  startDate: z.string().min(1, "Select start date"),
-  endDate: z.string().min(1, "Select end date"),
-}).refine((d) => d.startDate <= d.endDate, {
-  message: "End date must be on or after start date",
-  path: ["endDate"],
-});
+const schema = z
+  .object({
+    accountId: z.string().min(1, "Choose the account this statement belongs to"),
+    startDate: z.string().min(1, "Pick the first day of the statement"),
+    endDate: z.string().min(1, "Pick the last day of the statement"),
+  })
+  .refine((d) => d.startDate <= d.endDate, {
+    message: "The end date can't be before the start date",
+    path: ["endDate"],
+  });
 
-export function UploadStatementsModal({
-  open,
-  onOpenChange,
-  accounts,
-  onUploaded,
-}) {
+/** UploadStatementsModal - Send a PDF statement to the parser for one account and period. */
+export function UploadStatementsModal({ open, onOpenChange, accounts, onUploaded }) {
   const fileRef = useRef(null);
+  const [fileName, setFileName] = useState("");
   const [fileError, setFileError] = useState("");
+  const [dragging, setDragging] = useState(false);
   const user = useAuthStore((s) => s.user);
 
   const {
@@ -47,10 +41,28 @@ export function UploadStatementsModal({
     mode: "onSubmit",
   });
 
+  function pickFile(files) {
+    const file = files?.[0];
+    if (!file) return;
+    if (file.type && file.type !== "application/pdf") {
+      fileRef.current.value = "";
+      setFileName("");
+      setFileError("That isn't a PDF. Download the statement as a PDF from your bank.");
+      return;
+    }
+    if (files !== fileRef.current.files) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileRef.current.files = dt.files;
+    }
+    setFileName(file.name);
+    setFileError("");
+  }
+
   const onSubmit = async (data) => {
     const file = fileRef.current?.files?.[0];
     if (!file) {
-      setFileError("Please select a PDF file");
+      setFileError("Choose the PDF statement to upload");
       return;
     }
     setFileError("");
@@ -69,74 +81,99 @@ export function UploadStatementsModal({
     try {
       await pdfApi.post("/extract-pdf/async", formData);
       onUploaded?.();
-      toast.success("Statement uploaded. Processing started.");
+      toast.success("Statement uploaded. Setl is reading it now.");
       reset();
       fileRef.current.value = "";
+      setFileName("");
       onOpenChange(false);
     } catch (err) {
-      toast.error(err?.response?.data?.error || "Upload failed. Please try again.");
+      toast.error(err?.response?.data?.error || "The upload didn't go through. Check your connection and try again.");
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Upload statement</DialogTitle>
-          <DialogDescription>
-            Choose the account and the statement period. Upload a PDF from your bank.
-          </DialogDescription>
+          <DialogTitle>Upload a statement</DialogTitle>
+          <DialogDescription>Choose the account and the period the statement covers, then add the PDF from your bank.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4 pt-2">
-            <FormField
-              label="Account"
-              required
-              error={errors.accountId?.message}
-              id="accountId"
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-6 space-y-5">
+          <Field label="Account" required error={errors.accountId?.message}>
+            <SelectInput {...register("accountId")}>
+              <option value="">Choose an account</option>
+              {accounts.map((acc) => (
+                <option key={acc._id} value={acc._id}>
+                  {acc.accountName} · {acc.bankName} {maskAccountNumber(acc.accountNumber)}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="From" required error={errors.startDate?.message}>
+              <TextInput type="date" {...register("startDate")} />
+            </Field>
+            <Field label="To" required error={errors.endDate?.message}>
+              <TextInput type="date" {...register("endDate")} />
+            </Field>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-[13.5px] font-medium text-ink" id="statement-file-label">
+              PDF statement
+            </p>
+            <label
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragging(false);
+                pickFile(e.dataTransfer.files);
+              }}
+              className={cn(
+                "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-7 text-center transition-colors",
+                "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-violet",
+                dragging ? "border-violet bg-lilac" : fileError ? "border-negative/50 bg-negative-soft/40" : "border-hairline-strong hover:border-violet/50 hover:bg-sunken"
+              )}
             >
-              <Select {...register("accountId")}>
-                <option value="">Select account</option>
-                {accounts.map((acc) => {
-                  const mask = String(acc.accountNumber ?? "").replace(/\D/g, "").slice(-4);
-                  return (
-                    <option key={acc._id} value={acc._id}>
-                      {acc.accountName} · {acc.bankName}{mask ? ` ····${mask}` : ""}
-                    </option>
-                  );
-                })}
-              </Select>
-            </FormField>
-            <FormField
-              label="Start date"
-              required
-              error={errors.startDate?.message}
-              id="startDate"
-            >
-              <Input type="date" {...register("startDate")} />
-            </FormField>
-            <FormField
-              label="End date"
-              required
-              error={errors.endDate?.message}
-              id="endDate"
-            >
-              <Input type="date" {...register("endDate")} />
-            </FormField>
-            <FormField label="PDF file" required id="file" error={fileError}>
               <input
                 ref={fileRef}
                 type="file"
-                accept=".pdf"
-                className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-lg file:border-0 file:bg-tertiary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-tertiary hover:file:bg-tertiary/20"
+                accept=".pdf,application/pdf"
+                aria-labelledby="statement-file-label"
+                aria-describedby={fileError ? "statement-file-error" : undefined}
+                className="sr-only"
+                onChange={(e) => pickFile(e.target.files)}
               />
-            </FormField>
+              {fileName ? (
+                <>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-lilac text-violet-ink">
+                    <FileText className="h-5 w-5" aria-hidden />
+                  </span>
+                  <span className="max-w-full truncate text-[14px] font-medium text-ink">{fileName}</span>
+                  <span className="text-[12.5px] text-ink-muted">Click to choose a different file</span>
+                </>
+              ) : (
+                <>
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sunken text-ink-muted">
+                    <FileUp className="h-5 w-5" aria-hidden />
+                  </span>
+                  <span className="text-[14px] font-medium text-ink">Drop the PDF here, or click to browse</span>
+                  <span className="text-[12.5px] text-ink-muted">One statement per upload</span>
+                </>
+              )}
+            </label>
+            {fileError && (
+              <p id="statement-file-error" role="alert" className="mt-1.5 text-[12.5px] font-medium text-negative">
+                {fileError}
+              </p>
+            )}
           </div>
-          <DialogFormFooter
-            onCancel={() => onOpenChange(false)}
-            submitText="Upload"
-            isLoading={isSubmitting}
-          />
+
+          <DialogActions onCancel={() => onOpenChange(false)} submitLabel="Upload" submitIcon={Upload} submitting={isSubmitting} />
         </form>
       </DialogContent>
     </Dialog>

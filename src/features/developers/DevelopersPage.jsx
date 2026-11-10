@@ -85,7 +85,7 @@ Authorization: Bearer ACCESS_TOKEN
 export function DevelopersPage() {
   return (
     <MarketingShell>
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[200px_1fr] lg:pt-32">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:pt-32">
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <p className="text-sm font-medium">Developers</p>
           <nav className="mt-3 flex gap-2 overflow-x-auto lg:flex-col lg:gap-1" aria-label="On this page">

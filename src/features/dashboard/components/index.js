@@ -1,11 +1,3 @@
 export { AddAccountModal } from "./AddAccountModal.jsx";
-export { AccountsSection } from "./AccountsSection.jsx";
-export { ChartBalanceTrend } from "./ChartBalanceTrend.jsx";
-export { ChartSpendingByCategory } from "./ChartSpendingByCategory.jsx";
-export { ChartTransactionsByMonth } from "./ChartTransactionsByMonth.jsx";
-export { StatCard } from "./StatCard.jsx";
-export { TransactionsTable } from "./TransactionsTable.jsx";
 export { UploadStatementsModal } from "./UploadStatementsModal.jsx";
-export { DashboardSidebar } from "./DashboardSidebar.jsx";
-export { DashboardNav } from "./DashboardNav.jsx";
-export { ConnectedAppsSection } from "./ConnectedAppsSection.jsx";
+export { TxDescription, TxAmount, TxDate, TxCategory, TxAccount, TxBalance } from "./TxCells.jsx";

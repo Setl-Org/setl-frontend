@@ -140,8 +140,8 @@ export function AuthForm({ mode, onSubmit }) {
       )}
       <Button
         type="submit"
-        variant="tertiary"
-        className="w-full min-h-[48px] shadow-[0_0_24px_-6px_rgba(124,58,237,0.4)] transition hover:shadow-[0_0_32px_-8px_rgba(124,58,237,0.5)]"
+        variant="primary"
+        className="w-full min-h-[48px] rounded-full bg-ink text-white transition hover:bg-ink/85 focus-visible:ring-violet"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Please wait…" : isSignUp ? "Create account" : "Sign in"}
