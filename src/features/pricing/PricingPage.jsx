@@ -144,13 +144,9 @@ function ContactBlock() {
       <SetlMark strokeWidth={1} className="pointer-events-none absolute -left-[20%] top-1/2 -z-10 h-[900px] w-[900px] -translate-y-1/2 text-white/70" />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:py-32">
         <div>
-          <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] sm:text-5xl">Talk to the team</h2>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-[#3f3f3f]">
-            Tell us what you are building and which institutions your users hold. Or write directly to{" "}
-            <a href="mailto:hatif@joinsetl.com" className="font-medium text-[#141414] underline underline-offset-4">
-              hatif@joinsetl.com
-            </a>
-            .
+          <h2 className="text-3xl font-semibold tracking-tight">Talk to us</h2>
+          <p className="mt-3 max-w-md text-base leading-relaxed text-[#3f3f3f]">
+            Tell us what you are building and which institutions your users hold. Or write directly to info@joinsetl.com.
           </p>
         </div>
         <form

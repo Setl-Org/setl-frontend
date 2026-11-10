@@ -266,10 +266,8 @@ export function HomePage() {
 
           <div className="mt-6 flex flex-col gap-6 rounded-[32px] bg-white p-6 ring-1 ring-[#eee8f6] sm:flex-row sm:items-center sm:p-8">
             <a
-              href="https://nickarachi.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 self-start rounded-2xl bg-white p-2 ring-1 ring-[#eceae4] sm:self-auto"
+              href="mailto:info@joinsetl.com"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 px-6 text-sm font-medium text-white hover:bg-white/10"
             >
               <img src="/nic-karachi.webp" alt="National Incubation Center Karachi" className="h-20 w-auto" />
             </a>

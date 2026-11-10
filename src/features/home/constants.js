@@ -209,7 +209,7 @@ export const FOOTER_COLUMNS = [
       { label: "About", href: "/about", internal: true },
       { label: "Security", href: "/#security", internal: true },
       { label: "Contact", href: "/pricing#contact", internal: true },
-      { label: "hatif@joinsetl.com", href: "mailto:hatif@joinsetl.com" },
+      { label: "info@joinsetl.com", href: "mailto:info@joinsetl.com" },
     ],
   },
 ];

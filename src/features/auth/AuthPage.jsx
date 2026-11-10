@@ -85,7 +85,7 @@ export function AuthPage() {
             <div className="mb-6 text-center">
               <h1 className="section-title text-2xl sm:text-3xl">
                 {isSignIn ? "Welcome back." : "Create your account."}
-                <span className="block bg-[linear-gradient(90deg,#7c3aed,#a78bfa,#7c3aed)] bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer text-xl sm:text-2xl">
+                <span className="block text-xl text-ink-muted sm:text-2xl">
                   {isSignIn ? "Sign in to continue." : "Get started in seconds."}
                 </span>
               </h1>

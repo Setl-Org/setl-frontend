@@ -84,17 +84,12 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:py-28">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] sm:text-5xl">The team</h2>
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="mailto:hatif@joinsetl.com"
-                className="inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium ring-1 ring-[#e4ddf0] transition-colors hover:bg-[#F3EEF9]"
-              >
-                <Mail className="h-4 w-4" aria-hidden="true" />
-                hatif@joinsetl.com
+      <section className="border-t border-[#eceae4]">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
+          <h2 className="text-3xl font-semibold tracking-[-0.03em]">The team</h2>
+          <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
+              <a href="mailto:info@joinsetl.com" className="text-sm font-medium underline-offset-4 hover:underline">
+                info@joinsetl.com
               </a>
               <a
                 href={LINKEDIN}

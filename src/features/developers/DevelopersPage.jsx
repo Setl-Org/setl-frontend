@@ -90,23 +90,8 @@ export function DevelopersPage() {
   const keysHref = isAuthenticated ? "/developer" : "/auth";
   return (
     <MarketingShell>
-      <PageHero
-        title="Build on Setl"
-        description="Register an app, send your user through Connect, then read the accounts they approved."
-        actions={
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to={keysHref} className={`${pillClass} bg-[#141414] text-white hover:bg-[#2a2a2a]`}>
-              Get API keys
-            </Link>
-            <a href="#quickstart" className={`${pillClass} bg-white text-[#141414] ring-1 ring-[#141414] hover:bg-[#F3EEF9]`}>
-              Start the quickstart
-            </a>
-          </div>
-        }
-        aside={<CodeSample label="POST /api/v1/oauth/connect/sessions" code={CONNECT} />}
-      />
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 border-t border-[#eceae4] px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:pt-20">
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 pb-20 pt-28 sm:px-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:pt-32">
+        <aside className="lg:sticky lg:top-24 lg:self-start">
           <p className="text-sm font-medium">Developers</p>
           <nav className="mt-3 flex gap-2 overflow-x-auto lg:flex-col lg:gap-1" aria-label="On this page">
             {NAV.map((item) => (
