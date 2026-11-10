@@ -64,10 +64,11 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange }) {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-[#eceae4] bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center" onClick={closeAll}>
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4">
+      {/* Three-column pill: logo left, links in the exact centre, actions right */}
+      <div className="mx-auto grid h-14 max-w-6xl grid-cols-[1fr_auto] items-center gap-4 rounded-full border border-[#ebe7f2] bg-white/85 px-2 shadow-[0_12px_32px_-20px_rgba(29,11,48,0.45)] backdrop-blur-xl lg:grid-cols-[1fr_auto_1fr]">
+        <div className="contents">
+          <Link to="/" className="flex items-center justify-self-start pl-3 sm:pl-4" onClick={closeAll}>
             <img src="/logo.svg" alt="Setl" className="h-8 w-auto" />
           </Link>
 
@@ -155,7 +156,7 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange }) {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-self-end">
           {!isAuthenticated && (
             <Link
               to="/auth"
@@ -183,7 +184,7 @@ export function LandingNav({ mobileMenuOpen, onMobileMenuChange }) {
       </div>
 
       {mobileMenuOpen && (
-        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-[#eceae4] bg-white lg:hidden">
+        <div className="mx-auto mt-2 max-h-[calc(100vh-6rem)] max-w-6xl overflow-y-auto rounded-3xl border border-[#ebe7f2] bg-white shadow-[0_24px_48px_-24px_rgba(29,11,48,0.45)] lg:hidden">
           <nav className="flex flex-col gap-1 px-4 py-3" aria-label="Mobile">
             <MobileGroup
               label="Products"
@@ -271,7 +272,7 @@ function MenuButton({ label, open, active, onToggle, wide, children }) {
 
 function MenuPanel({ wide, children }) {
   return (
-    <div className={cn("rounded-2xl border border-[#eceae4] bg-white p-2 shadow-[0_16px_40px_-24px_rgba(0,0,0,0.35)]", wide && "w-[34rem]")}>
+    <div className={cn("rounded-2xl border border-[#ebe7f2] bg-white p-2 shadow-[0_24px_48px_-24px_rgba(29,11,48,0.45)]", wide && "w-[34rem]")}>
       {children}
     </div>
   );

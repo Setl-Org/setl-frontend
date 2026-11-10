@@ -1,0 +1,61 @@
+/* Public site polish that index.css doesn't own. Kept in its own file so the
+   dashboard branch's edits to index.css never collide with it. */
+
+/* Browser surfaces carry the palette: lilac selection, violet caret and focus. */
+.mkt {
+  caret-color: #7c3aed;
+}
+.mkt ::selection {
+  background: #e8ddf8;
+  color: #141414;
+}
+.mkt :focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 3px;
+}
+.mkt .on-dark :focus-visible,
+.mkt .on-dark:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* The Setl mark's sectors turning into place: the page's one authored moment. */
+@keyframes mark-sector {
+  from {
+    opacity: 0;
+    transform: rotate(-24deg) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Institution pills drifting in two columns (Built for Pakistan). */
+@keyframes pill-drift-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@keyframes pill-drift-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+.pill-drift-up {
+  animation: pill-drift-up 40s linear infinite;
+}
+.pill-drift-down {
+  animation: pill-drift-down 44s linear infinite;
+}
+.pills-paused .pill-drift-up,
+.pills-paused .pill-drift-down {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-drift-up,
+  .pill-drift-down {
+    animation: none;
+  }
+  .mkt * {
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,27 +1,27 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/cn";
-import { INPUT_CLASS } from "@/lib/styles";
-import { AnimatedSection } from "@/features/home/components";
+import { SetlMark } from "@/features/home/components/SetlMark";
+import { pillClass } from "@/features/home/brand";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const EMPTY = { name: "", email: "", company: "", useCase: "" };
 
+const INPUT =
+  "h-12 w-full rounded-2xl border border-[#e4ddf0] bg-white/80 px-4 text-[15px] text-[#141414] placeholder:text-[#8a8a96] transition-[border-color,box-shadow] focus:border-[#7c3aed] focus:outline-none focus:ring-4 focus:ring-[#7c3aed]/10";
+
 /**
  * UseCaseRequestForm - Lead-capture form for "Request a use case".
- * Mirrors the home ContactSection pattern: client-side validation, posts to
- * /api/contact, confirms with a toast. Tagged with type "use_case_request"
- * so the same endpoint can route it.
+ * Client-side validation, posts to /api/contact tagged "use_case_request",
+ * confirms with a toast. Visible by default: no scroll-triggered reveal.
  */
 export function UseCaseRequestForm() {
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  const update = (field) => (e) =>
-    setForm((f) => ({ ...f, [field]: e.target.value }));
+  const update = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
   const validate = () => {
     const next = {};
@@ -49,7 +49,7 @@ export function UseCaseRequestForm() {
         }),
       });
       if (!res.ok) throw new Error("Request failed");
-      toast.success("Thanks — we'll review your use case and get back to you.");
+      toast.success("Thanks. We'll review your use case and get back to you.");
       setForm(EMPTY);
       setErrors({});
     } catch {
@@ -60,32 +60,21 @@ export function UseCaseRequestForm() {
   };
 
   return (
-    <section
-      id="request"
-      className="border-t border-border bg-muted/30 py-16 section-pattern-dots sm:py-24 lg:py-28"
-    >
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
-        {/* Left — pitch */}
-        <AnimatedSection className="text-left">
-          <h2 className="text-3xl font-semibold tracking-tight text-[#141414]">
-            Tell us what you want to build
-          </h2>
-          <p className="section-subtitle">
-            Don&apos;t see your workflow above? Describe it and we&apos;ll show
-            you how a Setl connection supplies the account data your product
-            needs.
+    <section id="request" className="relative isolate scroll-mt-24 overflow-hidden bg-[#F3EEF9]">
+      <SetlMark strokeWidth={1} className="pointer-events-none absolute -left-[20%] top-1/2 -z-10 h-[900px] w-[900px] -translate-y-1/2 text-white/70" />
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1fr_1.15fr] lg:py-32">
+        <div>
+          <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.035em] sm:text-5xl">Tell us what you want to build</h2>
+          <p className="mt-5 max-w-md text-lg leading-relaxed text-[#3f3f3f]">
+            Don&apos;t see your workflow above? Describe it and we&apos;ll show you how a Setl connection supplies the account data
+            your product needs.
           </p>
-        </AnimatedSection>
+        </div>
 
-        {/* Right — form */}
-        <motion.form
+        <form
           noValidate
           onSubmit={onSubmit}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="rounded-3xl border border-[#eceae4] bg-white p-6 sm:p-8"
+          className="rounded-[28px] border border-white/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.78),rgba(255,255,255,0.55))] p-6 shadow-[0_0_0_1px_rgba(196,170,240,0.35),0_40px_80px_-34px_rgba(84,39,116,0.45),inset_0_1px_0_rgba(255,255,255,0.95)] backdrop-blur-[14px] sm:p-8"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Full name" error={errors.name}>
@@ -93,8 +82,9 @@ export function UseCaseRequestForm() {
                 type="text"
                 value={form.name}
                 onChange={update("name")}
+                autoComplete="name"
                 placeholder="Ayesha Khan"
-                className={cn(INPUT_CLASS, errors.name && "border-error")}
+                className={cn(INPUT, errors.name && "border-error")}
               />
             </Field>
             <Field label="Work email" error={errors.email}>
@@ -102,8 +92,9 @@ export function UseCaseRequestForm() {
                 type="email"
                 value={form.email}
                 onChange={update("email")}
+                autoComplete="email"
                 placeholder="you@company.com"
-                className={cn(INPUT_CLASS, errors.email && "border-error")}
+                className={cn(INPUT, errors.email && "border-error")}
               />
             </Field>
           </div>
@@ -113,8 +104,9 @@ export function UseCaseRequestForm() {
                 type="text"
                 value={form.company}
                 onChange={update("company")}
+                autoComplete="organization"
                 placeholder="Your fintech"
-                className={cn(INPUT_CLASS, errors.company && "border-error")}
+                className={cn(INPUT, errors.company && "border-error")}
               />
             </Field>
           </div>
@@ -125,27 +117,15 @@ export function UseCaseRequestForm() {
                 value={form.useCase}
                 onChange={update("useCase")}
                 placeholder="A lending app that needs income and cash flow from the HBL and Meezan accounts a borrower connects…"
-                className={cn(
-                  INPUT_CLASS,
-                  "h-auto resize-none py-2",
-                  errors.useCase && "border-error"
-                )}
+                className={cn(INPUT, "h-auto resize-none py-3", errors.useCase && "border-error")}
               />
             </Field>
           </div>
-          <motion.button
-            type="submit"
-            disabled={submitting}
-            whileHover={submitting ? undefined : { scale: 1.01 }}
-            whileTap={submitting ? undefined : { scale: 0.99 }}
-            className="mt-6 inline-flex h-11 w-full items-center justify-center rounded-full bg-[#141414] text-sm font-medium text-white hover:bg-[#2a2a2a] disabled:opacity-60"
-          >
+          <button type="submit" disabled={submitting} className={cn(pillClass, "mt-6 w-full bg-[#141414] text-white hover:bg-[#2a2a2a] disabled:opacity-60")}>
             {submitting ? "Sending…" : "Request use case"}
-          </motion.button>
-          <p className="mt-3 text-center text-xs text-muted-foreground">
-            We&apos;ll only use your details to get in touch about Setl.
-          </p>
-        </motion.form>
+          </button>
+          <p className="mt-3 text-center text-xs text-[#6b6b66]">We&apos;ll only use your details to get in touch about Setl.</p>
+        </form>
       </div>
     </section>
   );
@@ -154,7 +134,7 @@ export function UseCaseRequestForm() {
 function Field({ label, error, children }) {
   return (
     <label className="block text-left">
-      <span className="mb-1.5 flex items-center justify-between text-sm font-medium text-secondary">
+      <span className="mb-1.5 flex items-center justify-between text-sm font-medium text-[#141414]">
         {label}
         {error && <span className="text-xs font-normal text-error">{error}</span>}
       </span>
